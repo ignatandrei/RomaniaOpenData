@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IID.cs" />
     <Compile Include="RopData.cs" />
     <Compile Include="RopDocument.cs" />
     <Compile Include="Judet.cs" />
