@@ -24,18 +24,18 @@ namespace ROPLoadDataConsole
             
 
             var rep = new Repository<Judet>();
-            var exists = rep.ExistsData("judete");
+            var exists = rep.ExistsData();
             if (!exists)
             {
                 Console.WriteLine("save data to local");
                 var sl = new SirutaLoader();
                 var jud = sl.InitJudete().Result;
-                var ms=rep.StoreDataAsNew(jud.ToArray(), "judete").Result;
+                var ms=rep.StoreDataAsNew(jud.ToArray()).Result;
                 
             }
 
             Console.WriteLine("get data from local");
-            foreach (var judet in rep.RetrieveData("judete"))
+            foreach (var judet in rep.RetrieveData())
             {
                 Console.WriteLine(judet.Nume);
             }
