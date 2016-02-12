@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace ROPObjects
 {
-    public class RopDocument
+    public class RopDocument:IID
     {
-        public string UniqueId { get; set; }
+        public string TypeName { get; set; }
+        public string ID { get; set; }
         public Uri PathDocument { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }

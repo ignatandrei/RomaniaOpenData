@@ -49,6 +49,7 @@ namespace ROPLoadDataConsole
             alternateNames.Add(a("călăraşi", "calarasi"));
             alternateNames.Add(a("constanţa", "Constanta"));
             alternateNames.Add(a("dâmboviţa", "dimbovita"));
+            alternateNames.Add(a("dambovita", "dimbovita"));            
             alternateNames.Add(a("galaţi", "galati"));
             alternateNames.Add(a("ialomiţa", "ialomita"));
             alternateNames.Add(a("iaşi", "iasi"));
@@ -60,6 +61,7 @@ namespace ROPLoadDataConsole
             alternateNames.Add(a("sălaj", "salaj"));
             alternateNames.Add(a("timiş", "timis"));
             alternateNames.Add(a("vâlcea", "vilcea"));
+            alternateNames.Add(a("valcea", "vilcea"));
             alternateNames.Add(a("m.bucureşti", "bucuresti"));
 
 
@@ -72,7 +74,29 @@ namespace ROPLoadDataConsole
             //}
             return alternateNames.ToArray();
         }
+        static async Task<RopDocument[]> GetData(IRopLoader loader)
+        {
+            var type = loader.GetType().FullName;
+            using (var rep = new Repository<RopDocument>())
+            {
+                var exists = rep.ExistsData(type);
+                if (!exists)
+                {
+                    var rd= await loader.FillDate();
+                    var notId = rd.FirstOrDefault(it => string.IsNullOrWhiteSpace(it.ID));
+                    if(notId != null)
+                    {
+                        throw new ArgumentException("not id for" + notId.Name + "-- " + notId.PathDocument);
+                    }
+                    await rep.StoreDataAsNew(rd, type);
+                }
 
+                var data = rep.RetrieveData(type);
+                return data.ToArray();
+            }
+            
+            
+        }
         static async Task<Judet[]> GetJudete()
         {
 
@@ -147,22 +171,31 @@ namespace ROPLoadDataConsole
 
 
 
-            IRopLoader loader = new Medici();
-            loader.Init(judFinder,UAT);
-            //var date = loader.FillDate().Result;
-            //foreach (var data   in date)
-            //{
-            //    foreach (var ropData in data.Data)
-            //    {
-            //        Console.WriteLine(ropData.Judet.Nume + " " +ropData.Valoare);
-            //    }
-            //}
-
-
-            loader = new Farmacii();
-            loader.Init(judFinder, UAT);
-            var date = loader.FillDate().Result;
+            Func<Type, IRopLoader> create = (type) =>
+             {
+                 var loaderData= Activator.CreateInstance(type) as IRopLoader;
+                 loaderData.Init(judFinder, UAT);
+                 var d = GetData(loaderData).Result;
+                 write(d);
+                 return loaderData;
+             };
+            IRopLoader loader = create(typeof(Medici));                        
+            loader = create(typeof(Farmacii));
             
+            
+
+        }
+
+        private static void write(RopDocument[] d)
+        {
+            foreach (var doc in d)
+            {
+                Console.WriteLine("------------"+doc.Name);
+                foreach (var item in doc.Data)
+                {
+                    Console.WriteLine(item.Judet.Nume + " -- " + item.Valoare);
+                }
+            }
         }
     }
 }

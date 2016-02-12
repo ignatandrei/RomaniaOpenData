@@ -18,7 +18,7 @@ namespace ROPMinisterulSanatatii
         public Medici()
         {
             rdBase = new RopDocument();
-            rdBase.UniqueId = ("931433F4-1595-4AF6-A746-8C5859B0823C");
+            rdBase.ID = ("931433F4-1595-4AF6-A746-8C5859B0823C");
             rdBase.PathDocument =
                new Uri( "http://www.date.gov.ro/dataset/3c128d2f-f4e2-47d5-ad11-a5602c1e4856/resource/61a73bc0-34c6-4067-b1c4-3ab659323c87/download/numrul-medicilor-pe-judee-i-ministere-din-sectorul-public-numrul-medicilor-pe-ministere-macroreg.xls");
             rdBase.WebPage =
@@ -43,10 +43,10 @@ namespace ROPMinisterulSanatatii
             var dt = new DataTable();
             using (var m = new OleDbConnection())
             {
-                m.ConnectionString = BuildExcelConnectionString(path, true);
+                m.ConnectionString = ExcelHelpers.BuildExcelConnectionString(path, true);
                 m.Open();
                 var query = @"Select * From [Sheet1$]";
-                using (var cmd = new System.Data.OleDb.OleDbCommand(query, m))
+                using (var cmd = new OleDbCommand(query, m))
                 {
                     using (var dr = cmd.ExecuteReaderAsync().Result)
                     {
@@ -83,18 +83,6 @@ namespace ROPMinisterulSanatatii
             return new [] { rdBase };
         }
 
-        public string BuildExcelConnectionString(string Filename, bool FirstRowContainsHeaders)
-        {
-            return string.Format("Provider=Microsoft.Jet.OLEDB.4.0;Data Source = '{0}'; Extended Properties =\"Excel 8.0;HDR={1};\"",
-        Filename.Replace("'", "''"),FirstRowContainsHeaders ? "Yes" : "No");
-        }
-
-        public string BuildExcel2007ConnectionString(string Filename, bool FirstRowContainsHeaders)
-        {
-            return string.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source ={ 0}; Extended Properties =\"Excel 12.0;HDR={1}\";",
-        Filename.Replace("'", "''"),FirstRowContainsHeaders ? "Yes" : "No");
-
-        }
         private JudetFinder judetFinder;
         private UAT[] uate;
         

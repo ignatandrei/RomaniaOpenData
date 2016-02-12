@@ -31,7 +31,7 @@ namespace ROPInfrastructure
 
         string IndexName(string type)
         {
-            return nameType + (type ?? "") + "/ById";
+            return string.Format("{0}/{1}", nameType + (type ?? "") , "ById");
         }
         public bool ExistsData(string type=null)
         {
@@ -76,13 +76,17 @@ namespace ROPInfrastructure
         {
             var sw=new Stopwatch();
             sw.Start();
-            
+            var strType= nameType.Replace(".", ""); 
+            foreach (var item in data)
+            {
+                item.TypeName = strType;
+            }   
 
             DeleteData(type);
             string indexName = IndexName(type);
             using (var bulkInsert = instance.BulkInsert())
             {
-
+                
                 foreach (var id in data)
                 {
                     bulkInsert.Store(id);
@@ -94,7 +98,10 @@ namespace ROPInfrastructure
                                         new IndexDefinitionBuilder<T>
                                         {
                                             Map = posts => from post in posts
+                                                           //where post.TypeName == strType
                                                            select new { post.ID }
+                                                           ,
+                                            
 
                                         });
             sw.Stop();

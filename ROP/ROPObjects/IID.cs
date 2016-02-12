@@ -10,5 +10,13 @@ namespace ROPObjects
     public interface IID
     {
         string ID { get; set; }
+        /// <summary>
+        /// Gets or sets the name of the type.
+        /// </summary>
+        /// <value>
+        /// The name of the type.
+        /// DO NOT USE - for retrieving from database
+        /// </value>
+        string TypeName { get; set; }
     }
 }

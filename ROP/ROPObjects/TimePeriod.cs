@@ -15,6 +15,10 @@ namespace ROPObjects
     /// </summary>
     public class SingleTimePeriod:TimePeriod
     {
+        public SingleTimePeriod()
+        {
+
+        }
         /// <summary>
         /// string must be yyyy-MM-dd
         /// </summary>
