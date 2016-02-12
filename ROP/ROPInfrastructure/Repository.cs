@@ -48,8 +48,7 @@ namespace ROPInfrastructure
             using (var session = instance.OpenSession())
             {
 
-                var query = session.Query<T>(indexName);
-
+                var query = session.Query<T>(indexName).Where(it=>it.TypeName == indexName);
                 using (var res = session.Advanced.Stream(query))
                 {
                     while (res.MoveNext())
@@ -68,7 +67,7 @@ namespace ROPInfrastructure
 
             if (ExistsData(type))
             {
-                instance.DatabaseCommands.DeleteByIndex(indexName, new IndexQuery());
+                instance.DatabaseCommands.DeleteByIndex(indexName, new IndexQuery() { Query = "TypeName:" + indexName} );
                 instance.DatabaseCommands.DeleteIndex(indexName);
             }
         }
@@ -76,14 +75,14 @@ namespace ROPInfrastructure
         {
             var sw=new Stopwatch();
             sw.Start();
-            var strType= nameType.Replace(".", ""); 
+            string indexName = IndexName(type);
             foreach (var item in data)
             {
-                item.TypeName = strType;
+                item.TypeName = indexName;
             }   
 
             DeleteData(type);
-            string indexName = IndexName(type);
+            
             using (var bulkInsert = instance.BulkInsert())
             {
                 
@@ -96,13 +95,13 @@ namespace ROPInfrastructure
             }
             instance.DatabaseCommands.PutIndex(indexName,
                                         new IndexDefinitionBuilder<T>
-                                        {
-                                            Map = posts => from post in posts
-                                                           //where post.TypeName == strType
-                                                           select new { post.ID }
-                                                           ,
-                                            
-
+                                        { 
+                                            Map = posts => from post in posts                                                              
+                                                           select new { post.ID, post.TypeName }
+                                            //               ,
+                                            //Reduce = results => from result in results
+                                            //                    group result by result.TypeName into g
+                                            //                    select g.Key;                                            
                                         });
             sw.Stop();
             await Task.Delay(2000);//to can retrieve after
