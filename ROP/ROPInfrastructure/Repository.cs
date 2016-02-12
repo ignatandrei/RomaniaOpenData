@@ -61,17 +61,25 @@ namespace ROPInfrastructure
 
             }
         }
-        public async Task<long> StoreDataAsNew(T[] data, string type=null)            
+
+        public void DeleteData(string type = null)
         {
-            var sw=new Stopwatch();
-            sw.Start();
             string indexName = IndexName(type);
-            
+
             if (ExistsData(type))
             {
                 instance.DatabaseCommands.DeleteByIndex(indexName, new IndexQuery());
                 instance.DatabaseCommands.DeleteIndex(indexName);
             }
+        }
+        public async Task<long> StoreDataAsNew(T[] data, string type=null)            
+        {
+            var sw=new Stopwatch();
+            sw.Start();
+            
+
+            DeleteData(type);
+            string indexName = IndexName(type);
             using (var bulkInsert = instance.BulkInsert())
             {
 
@@ -83,7 +91,7 @@ namespace ROPInfrastructure
 
             }
             instance.DatabaseCommands.PutIndex(indexName,
-                                        new IndexDefinitionBuilder<Judet>
+                                        new IndexDefinitionBuilder<T>
                                         {
                                             Map = posts => from post in posts
                                                            select new { post.ID }

@@ -10,6 +10,11 @@ namespace ROPCommon
 {
     public class DownloadData
     {
+        public Task<byte[]> Data(string url)
+        {
+            return Data(new Uri(url));
+        }
+
         public async Task<byte[]> Data(Uri uri)
         {
             if (uri.IsFile)

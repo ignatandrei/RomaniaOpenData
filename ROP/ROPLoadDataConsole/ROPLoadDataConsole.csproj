@@ -66,9 +66,17 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ROPCommon\ROPCommon.csproj">
+      <Project>{3C5ADB04-ACB6-494A-9651-DF7021A9548A}</Project>
+      <Name>ROPCommon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ROPInfrastructure\ROPInfrastructure.csproj">
       <Project>{D7A069F0-B74A-4199-A59E-0BD2C8303D5C}</Project>
       <Name>ROPInfrastructure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ROPMinisterulSanatatii\ROPMinisterulSanatatii.csproj">
+      <Project>{1D2D6739-75B8-4109-B05E-D84B988968AB}</Project>
+      <Name>ROPMinisterulSanatatii</Name>
     </ProjectReference>
     <ProjectReference Include="..\ROPObjects\ROPObjects.csproj">
       <Project>{df7a557b-39a8-42dd-ba4a-e3de140c9ee2}</Project>

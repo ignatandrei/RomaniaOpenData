@@ -11,10 +11,11 @@ namespace ROPObjects
         public string UniqueId { get; set; }
         public Uri PathDocument { get; set; }
         public string Name { get; set; }
-        public string Description { get; set; }        
+        public string Description { get; set; }
+
         public TimePeriod AvailableOn { get; set; }
 
-        public RopData[] Data { get; set; } 
-
+        public RopData[] Data { get; set; }
+        public string WebPage { get; set; }
     }
 }
