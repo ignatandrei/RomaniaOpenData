@@ -18,17 +18,38 @@ namespace ROPInfrastructure
         where T:IID
     {
         private string nameType;
-        private EmbeddableDocumentStore instance;
+        private static EmbeddableDocumentStore instance;
         public Repository()
         {
             nameType = typeof (T).FullName;
+            
+
+        }
+
+        static Repository()
+        {
             instance = new EmbeddableDocumentStore();
             instance.ConnectionStringName = "RavenDB";
             instance.Conventions.FindIdentityPropertyNameFromEntityName = (entity) => "ID";
             instance.Initialize();
+            
+            //var settings1=new Dictionary<string, string>();
+            //settings1.Add("Raven/DataDir", "~/Databases/andrei1");
+            //instance.DatabaseCommands.GlobalAdmin.CreateDatabase(new DatabaseDocument()
+            //{
+            //     Id="andrei1",
+            //     Settings =settings1
 
+            //});
+            //var settings2 = new Dictionary<string, string>();
+            //settings2.Add("Raven/DataDir", "~/Databases/andrei2");
+            //instance.DatabaseCommands.GlobalAdmin.CreateDatabase(new DatabaseDocument()
+            //{
+            //    Id="andrei2",
+            //    Settings =settings2
+
+            //});
         }
-
         string IndexName(string type)
         {
             return string.Format("{0}/{1}", nameType + (type ?? "") , "ById");

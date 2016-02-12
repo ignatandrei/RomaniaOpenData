@@ -12,7 +12,7 @@ using ROPObjects;
 
 namespace ROPMinisterulSanatatii
 {
-    public class Medici: IRopLoader
+    public class Medici: RopLoader
     {
         private RopDocument rdBase;
         public Medici()
@@ -29,8 +29,8 @@ namespace ROPMinisterulSanatatii
 
             rdBase.AvailableOn = new SingleTimePeriod("2015-10-19");
         }
-        
-        public async Task<RopDocument[]> FillDate()
+
+        public override async Task<RopDocument[]> FillDate()
         {
             
             List<RopData> data=new List<RopData>();
@@ -83,14 +83,10 @@ namespace ROPMinisterulSanatatii
             return new [] { rdBase };
         }
 
-        private JudetFinder judetFinder;
-        private UAT[] uate;
+        
+        
         
 
-        public void Init(JudetFinder JudetFinder, UAT[] Uate)
-        {
-            this.judetFinder = JudetFinder;
-            this.uate = Uate;
-        }
+        
     }
 }

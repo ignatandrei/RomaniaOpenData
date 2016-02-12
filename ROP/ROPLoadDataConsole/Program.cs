@@ -74,29 +74,7 @@ namespace ROPLoadDataConsole
             //}
             return alternateNames.ToArray();
         }
-        static async Task<RopDocument[]> GetData(IRopLoader loader)
-        {
-            var type = loader.GetType().FullName;
-            using (var rep = new Repository<RopDocument>())
-            {
-                var exists = rep.ExistsData(type);
-                if (!exists)
-                {
-                    var rd= await loader.FillDate();
-                    var notId = rd.FirstOrDefault(it => string.IsNullOrWhiteSpace(it.ID));
-                    if(notId != null)
-                    {
-                        throw new ArgumentException("not id for" + notId.Name + "-- " + notId.PathDocument);
-                    }
-                    await rep.StoreDataAsNew(rd, type);
-                }
-
-                var data = rep.RetrieveData(type);
-                return data.ToArray();
-            }
-            
-            
-        }
+        
         static async Task<Judet[]> GetJudete()
         {
 
@@ -142,14 +120,38 @@ namespace ROPLoadDataConsole
             }
         }
 
+        static async Task<int> DataSaved(JudetFinder jud)
+        {
+            var listTasks=new List<Task<IRopLoader>>();
+            using (var rep = new Repository<RopDataSaved>())
+            {
+
+                var data = rep.RetrieveData();
+                if (data != null)
+                {
+                    var arrData = data.ToArray();
+                    foreach (var ropDataSaved in arrData)
+                    {
+                        Console.WriteLine(ropDataSaved.Name);
+                        var type = Type.GetType(ropDataSaved.Name);
+                        listTasks.Add(GetOrLoad(type, jud));
+
+                    }
+
+                    await Task.WhenAll(listTasks.ToArray());
+                    
+                }
+
+            }
+            return 1;
+
+        }
         static void Main(string[] args)
         {
             //var dd = new DownloadData();
             //var dataBytes = dd.Data("http://www.date.gov.ro/dataset/3c128d2f-f4e2-47d5-ad11-a5602c1e4856/resource/61a73bc0-34c6-4067-b1c4-3ab659323c87/download/numrul-medicilor-pe-judee-i-ministere-din-sectorul-public-numrul-medicilor-pe-ministere-macroreg.xls").Result;
 
-            //var path =  "D:\\a.xls";
-            //File.WriteAllBytes(path, dataBytes);
-            //Process.Start(path);
+            
             //return;
 
             var judete = GetJudete().Result;
@@ -168,24 +170,59 @@ namespace ROPLoadDataConsole
             var judFinder=new JudetFinder();
             judFinder.judete = judete;
             judFinder.altNumeJudet = GetAlternate(judete);
-
-
-
-            Func<Type, IRopLoader> create = (type) =>
-             {
-                 var loaderData= Activator.CreateInstance(type) as IRopLoader;
-                 loaderData.Init(judFinder, UAT);
-                 var d = GetData(loaderData).Result;
-                 write(d);
-                 return loaderData;
-             };
-            IRopLoader loader = create(typeof(Medici));                        
-            loader = create(typeof(Farmacii));
+            try
+            {
+                var a = DataSaved(judFinder).Result;
+            }
+            catch (AggregateException aggEx)
+            {
+                var ex = aggEx.InnerExceptions.FirstOrDefault();
+                throw;
+            }
             
             
+            
+            return;
 
+            var dataSaved=new List<RopDataSaved>();
+            
+            IRopLoader loader;
+            loader = GetOrLoad(typeof(Medici), judFinder).Result;
+            dataSaved.AddRange(
+                loader.GetData().Result.Select(ropDocument => new RopDataSaved()
+                {
+                    ID = ropDocument.ID,
+                    Name = loader.GetType().AssemblyQualifiedName,
+                    Document = ropDocument
+                }));
+
+
+            loader = GetOrLoad(typeof(Farmacii),judFinder).Result;
+
+            dataSaved.AddRange(
+                loader.GetData().Result.Select(ropDocument => new RopDataSaved()
+                {
+                    ID = ropDocument.ID,
+                    Name = loader.GetType().AssemblyQualifiedName,
+                    Document = ropDocument
+                }));
+
+
+            using (var rep = new Repository<RopDataSaved>())
+            {
+                var q =rep.StoreDataAsNew(dataSaved.ToArray()).Result;
+            }
+            
         }
+        static async Task<IRopLoader> GetOrLoad(Type type,JudetFinder judFinder) 
+        {
+            var loaderData = Activator.CreateInstance(type) as IRopLoader;
+            loaderData.Init(judFinder);
 
+            var d = await loaderData.GetData();
+            write(d);
+            return loaderData;
+        }
         private static void write(RopDocument[] d)
         {
             foreach (var doc in d)

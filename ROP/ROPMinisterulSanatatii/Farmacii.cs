@@ -11,18 +11,11 @@ using System.IO;
 
 namespace ROPMinisterulSanatatii
 {
-    public class Farmacii: IRopLoader
+    public class Farmacii: RopLoader
     {
-        private JudetFinder judetFinder;
-        private UAT[] uate;
+       
 
-        public void Init(JudetFinder judete, UAT[] uate)
-        {
-            this.judetFinder = judete;
-            this.uate = uate;
-        }
-
-        public async Task<RopDocument[]> FillDate()
+        public override async Task<RopDocument[]> FillDate()
         {
             
             var dd = new DownloadData();
