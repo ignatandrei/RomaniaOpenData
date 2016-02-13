@@ -161,7 +161,7 @@
 
             $('#container').highcharts({
                 chart: {
-                    type: 'line'
+                    type: 'spline'
                 },
                 title: {
                     text: title
@@ -176,6 +176,10 @@
                     title: {
                         text: 'Valori'
                     }
+                },
+                tooltip: {
+                    crosshairs: true,
+                    shared: true
                 },
                 plotOptions: {
                     line: {

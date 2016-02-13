@@ -56,8 +56,8 @@ namespace ROPInfrastructure
             try
             {
                 //To try in debug mode
-                NonAdminHttp.EnsureCanListenToWhenInNonAdminContext(8080);
-                instanceDefault.UseEmbeddedHttpServer = true;
+                //NonAdminHttp.EnsureCanListenToWhenInNonAdminContext(8080);
+                //instanceDefault.UseEmbeddedHttpServer = true;
                 instanceDefault.Initialize();
 
             }
