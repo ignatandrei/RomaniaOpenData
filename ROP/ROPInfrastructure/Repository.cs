@@ -208,6 +208,15 @@ namespace ROPInfrastructure
             var type = Type.GetType(typeName);
             return await GetOrLoad(type);
         }
+
+        public static void Cleanup()
+        {
+            if (instanceDefault != null)
+            {
+                instanceDefault.Dispose();
+                instanceDefault = null;
+            }
+        }
     }
 
     public class Repository<T>:IDisposable

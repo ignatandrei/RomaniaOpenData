@@ -22,6 +22,11 @@ namespace ROPWebMVC
             InitData();
         }
 
+        protected void Application_End()
+        {
+            instanceRavenStore.Cleanup();
+        }
+
         private void InitData()
         {
             //instanceRavenStore.BackupAllDatabase(@"D:\github\test");
