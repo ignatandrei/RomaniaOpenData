@@ -27,9 +27,9 @@
 
             <p>
 
-                <input type="checkbox" id="@item.ID"/>
+                <input type="checkbox" id="@item.ID" name="series"/>
                 <label for="@item.ID">@item.Document.Name</label>
-
+                <input type="text" disabled="disabled" id="@string.Format("multiply{0}",item.ID)" value="1" onblur="javascript:ShowData()"/>
             </p>
         }
 
@@ -41,7 +41,17 @@
     <div class="col-md-10">
         <h2>Show</h2>
         <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+        <p>
+            @foreach (var s in jud)
+            {
+                <text>
+                <input type="checkbox" id="@s" name="judet" checked="checked" value="@s"/>
+                <label for="@s">@s</label>
+                </text>
+            }
+        </p>
     </div>
+
 
 </div>
 @section scripts
@@ -50,15 +60,20 @@
 
         var arrData = [];
         $(document).ready(function() {
-            $('input[type="checkbox"]').change(function() {
+            $('input[type="checkbox"][name="series"]').change(function() {
                 var chk = $(this);
                 DownloadResource(chk);
+                ShowData();
+            });
+
+            $('input[type="checkbox"][name="judet"]').change(function() {
                 ShowData();
             });
         });
 
 
         function DownloadResource(chk) {
+            
             var check = chk.prop('checked');
             var id = chk.prop('id');
             var result = $.grep(arrData, function(e) { return e.id == id; });
@@ -76,6 +91,7 @@
                 }).done(function(data) {
                     //chk.addClass("done");
                     var data = { id: id, data: data, show: true };
+                    $("#multiply" + id).prop("disabled", false);
                     arrData.push(data);
                 });
             }
@@ -86,12 +102,31 @@
     <script src="https://code.highcharts.com/highcharts.js"></script>
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script>
-        var categoriesJudete = @Html.Raw(str);
+        var Judete = @Html.Raw(str);
 
         function ShowData() {
+            var initialJudete=Judete.slice(0);
+            
+            //TODO: use MVVM
+            var arrayCheckedJudete = $('input[type="checkbox"][name="judet"]')
+                .filter(":not(:checked)")
+                .map(function(){
+
+                return $(this).val();
+
+                });
+            
+            var categoriesJudete = [];
+
+            jQuery.grep(initialJudete, function(el) {
+                if (jQuery.inArray(el, arrayCheckedJudete) == -1) categoriesJudete.push(el);
+            });
+
+            //TODO:use MVVM
+            //remove judete not checked
 
             var result = $.grep(arrData, function(e) { return e.show; });
-            var existsData = (result.length > 0);
+            var existsData = (result.length > 0) && (categoriesJudete.length>0);
 
             $('#container').toggle(existsData);
             if (!existsData)
@@ -104,11 +139,19 @@
                 var doc = result[i].data.Document;
                 var dataDocument = {};
                 dataDocument.name = doc.Name;
+                //TODO: use MVVM javascript
+                var multiply = $("#multiply" + doc.ID).val();
+                multiply = parseFloat(multiply);
+                
+                if (!$.isNumeric(multiply)) {
+                    multiply = 1;
+                }
                 dataDocument.data = [];
+
                 for (var jud = 0; jud < categoriesJudete.length; jud++) {
                     var judet = categoriesJudete[jud];
                     var val = $.grep(doc.Data, function(e) { return e.Judet.Nume == judet; });
-                    var valoare = val[0].Valoare;
+                    var valoare = val[0].Valoare * multiply ;
                     dataDocument.data.push(valoare);
 
                 }

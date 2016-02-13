@@ -12,7 +12,7 @@ namespace ROPWebMVC.Controllers
     {
         public async Task<ActionResult> Index()
         {
-            var dataSv = await instanceRavenStore.DataSaved();
+            var dataSv = this.HttpContext.Application["dataSaved"] as RopDataSaved[];
             return View(dataSv);
         }
 
@@ -56,8 +56,10 @@ namespace ROPWebMVC.Controllers
                 {
                     var q = await rep.StoreDataAsNew(dataSaved.ToArray());
                 }
+                
+                
             }
-
+            this.HttpContext.Application["dataSaved"] = dataSaved.ToArray();
             return View();
 
         }

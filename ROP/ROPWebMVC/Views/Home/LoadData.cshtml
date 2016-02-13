@@ -1,13 +1,35 @@
-﻿@using ROPMinisterulSanatatii
+﻿@using ROPInfrastructure
+@using ROPMinisterulSanatatii
 
 @{
     ViewBag.Title = "LoadData";
+    var data = AppState["dataSaved"] as RopDataSaved[];
+    var names=Enumerable.Select(data, it => it.Name).Distinct().ToArray();
+    Func<string,string> html=(str) => str.Replace(".", "_");
+    
+    var existingData = new[]
+    {
+
+        new Tuple<string, string, bool>("Medici",html( typeof (Medici).AssemblyQualifiedName), names.Contains(typeof (Medici).AssemblyQualifiedName)),
+        new Tuple<string, string, bool>("Farmacii", html(typeof (Farmacii).AssemblyQualifiedName), names.Contains(typeof (Farmacii).AssemblyQualifiedName)),
+
+    };
 }
 
 <h2>LoadData</h2>
-<p>
-    <a href="@Url.Action("LoadData", new {id = typeof (Medici).AssemblyQualifiedName.Replace(".", "_")})">Medici</a>
-</p>
-<p>
-    <a href="@Url.Action("LoadData", new {id = typeof (Farmacii).AssemblyQualifiedName.Replace(".", "_")})">Farmacii</a>
-</p>
+
+    @foreach (var item in existingData)
+    {
+        if (item.Item3)
+        {
+            <p>@item.Item1</p>
+        }
+        else
+        {
+            <p>
+                <a href='@Url.Action("LoadData", new {id = item.Item2})'>@item.Item1</a>
+            </p>
+        }
+    }
+                
+            
