@@ -64,6 +64,10 @@
       <Project>{DF7A557B-39A8-42DD-BA4A-E3DE140C9EE2}</Project>
       <Name>ROPObjects</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ROPSiruta\ROPSiruta.csproj">
+      <Project>{7CA077E3-D45C-426C-B6B7-97A9F22169A2}</Project>
+      <Name>ROPSiruta</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

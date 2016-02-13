@@ -24,136 +24,29 @@ namespace ROPLoadDataConsole
     class Program
     {
 
-        static AlternateNamesJudet[] GetAlternate(Judet[] jud)
-        {
-            var alternateNames = new List<AlternateNamesJudet>();
-            Func<string, string, AlternateNamesJudet> a = (altNume, Nume) =>
-            {
-                altNume = altNume.ToLower();
-                Nume = Nume.ToLower();
-                var alt = new AlternateNamesJudet();
-                alt.IDJudet = jud.First(it => it.Nume.ToLower() == Nume).ID;
-                alt.AlternateName = altNume;
-                return alt;
-            };
-            
-            alternateNames.Add(a("argeş", "arges"));
+       
 
-            alternateNames.Add(a("bacău", "bacau"));
-            alternateNames.Add(a("Bistriţa-N.", "BISTRITA-NASAUD"));
-            alternateNames.Add(a("Botoşani", "Botosani"));
-            alternateNames.Add(a("braşov", "Brasov"));
-            alternateNames.Add(a("brăila", "braila"));
-            alternateNames.Add(a("buzău", "buzau"));
-            alternateNames.Add(a("caraş-s.", "CARAS-SEVERIN"));
-            alternateNames.Add(a("călăraşi", "calarasi"));
-            alternateNames.Add(a("constanţa", "Constanta"));
-            alternateNames.Add(a("dâmboviţa", "dimbovita"));
-            alternateNames.Add(a("dambovita", "dimbovita"));            
-            alternateNames.Add(a("galaţi", "galati"));
-            alternateNames.Add(a("ialomiţa", "ialomita"));
-            alternateNames.Add(a("iaşi", "iasi"));
-            alternateNames.Add(a("maramureş", "maramures"));
-            alternateNames.Add(a("mehedinţi", "mehedinti"));
-            alternateNames.Add(a("mureş", "mures"));
-            alternateNames.Add(a("neamţ", "neamt"));
-            alternateNames.Add(a("satu-mare", "satu_mare"));
-            alternateNames.Add(a("sălaj", "salaj"));
-            alternateNames.Add(a("timiş", "timis"));
-            alternateNames.Add(a("vâlcea", "vilcea"));
-            alternateNames.Add(a("valcea", "vilcea"));
-            alternateNames.Add(a("m.bucureşti", "bucuresti"));
+        //static async Task<UAT[]> GetUAT(Judet[] judete)
+        //{
+        //    return new UAT[0];
+        //    using (var repUAT = new Repository<UAT>())
+        //    {
+        //        var exists = repUAT.ExistsData();
+        //        if (!exists)
+        //        {
+        //            Console.WriteLine("save uat to local");
+        //            var sl = new SirutaLoader();
+        //            var uat = await sl.InitUat(judete);
+        //            var ms = await repUAT.StoreDataAsNew(uat.ToArray());
 
+        //        }
+        //        Console.WriteLine("get data from local");
+        //        return repUAT.RetrieveData().ToArray();
 
+        //    }
+        //}
 
-
-
-            //using (var rep = new Repository<AlternateNamesJudet>())
-            //{
-            //    await rep.StoreDataAsNew(alternateNames);
-            //}
-            return alternateNames.ToArray();
-        }
         
-        static async Task<Judet[]> GetJudete()
-        {
-
-            
-
-            using (var rep = new Repository<Judet>())
-            {
-                var exists = rep.ExistsData();
-                if (!exists)
-                {
-                    Console.WriteLine("save judete to local");
-                    var sl = new SirutaLoader();
-                    var jud = (await sl.InitJudete()).ToArray();
-                    var ms = await rep.StoreDataAsNew(jud);
-                    
-                }
-
-                Console.WriteLine("get data from local");
-                return rep.RetrieveData().ToArray();
-
-
-
-            }
-        }
-
-        static async Task<UAT[]> GetUAT(Judet[] judete)
-        {
-            return new UAT[0];
-            using (var repUAT = new Repository<UAT>())
-            {
-                var exists = repUAT.ExistsData();
-                if (!exists)
-                {
-                    Console.WriteLine("save uat to local");
-                    var sl = new SirutaLoader();
-                    var uat = await sl.InitUat(judete);
-                    var ms = await repUAT.StoreDataAsNew(uat.ToArray());
-
-                }
-                Console.WriteLine("get data from local");
-                return repUAT.RetrieveData().ToArray();
-
-            }
-        }
-
-        static async Task<int> DataSaved(JudetFinder jud)
-        {
-            var listTasks=new List<Task<IRopLoader>>();
-            using (var rep = new Repository<RopDataSaved>())
-            {
-
-                var data = rep.RetrieveData();
-                if (data != null)
-                {
-                    var arrData = data.ToArray();
-                    foreach (var ropDataSaved in arrData)
-                    {
-                        Console.WriteLine(ropDataSaved.Name);
-                        var type = Type.GetType(ropDataSaved.Name);
-                        listTasks.Add(GetOrLoad(type, jud));
-
-                    }
-                    try
-                    {
-                        await Task.WhenAll(listTasks.ToArray());
-                    }
-                    catch (Exception ex)
-                    {
-                        var s = ex.StackTrace;
-                        throw;
-                    }
-                    
-                    
-                }
-
-            }
-            return 1;
-
-        }
         static void Main(string[] args)
         {
             //var dd = new DownloadData();
@@ -162,53 +55,54 @@ namespace ROPLoadDataConsole
             
             //return;
 
-            var judete = GetJudete().Result;
+            var judete = instanceRavenStore.Judete().Result;
             foreach (var judet in judete)
             {
                 Console.WriteLine(judet.Nume);
             }
 
-            
-            var judFinder=new JudetFinder();
-            judFinder.judete = judete;
-            judFinder.altNumeJudet = GetAlternate(judete);
-            try
+
+            var dataSv = instanceRavenStore.DataSaved().Result;
+            foreach (var data in dataSv)
             {
-                var a = DataSaved(judFinder).Result;
+                var docs = instanceRavenStore.GetOrLoad(data).Result;
+                foreach (var ropDocument in docs)
+                {
+                    Console.WriteLine(ropDocument.Name);
+                    foreach (var ropData in ropDocument.Data)
+                    {
+                        Console.WriteLine("              " + ropData.Judet.Nume + " "  + ropData.Valoare);
+                    }
+                }
+
             }
-            catch (AggregateException aggEx)
-            {
-                var ex = aggEx.InnerExceptions.FirstOrDefault();
-                throw;
-            }
-          
+
+           
             
-            return;
             
 
             var dataSaved=new List<RopDataSaved>();
-            
-            IRopLoader loader;
-            loader = GetOrLoad(typeof(Medici), judFinder).Result;
+
+            var type = typeof (Medici);
+            var dataRetr =instanceRavenStore.GetOrLoad(type).Result;
             dataSaved.AddRange(
-                loader.GetData().Result.Select(ropDocument => new RopDataSaved()
+                dataRetr.Select(ropDocument => new RopDataSaved()
                 {
                     ID = ropDocument.ID,
-                    Name = loader.GetType().AssemblyQualifiedName,
+                    Name = type.AssemblyQualifiedName,
                     Document = ropDocument
                 }));
 
-
-            loader = GetOrLoad(typeof(Farmacii),judFinder).Result;
+            type = typeof(Farmacii);
+            dataRetr = instanceRavenStore.GetOrLoad(typeof(Farmacii)).Result;
 
             dataSaved.AddRange(
-                loader.GetData().Result.Select(ropDocument => new RopDataSaved()
+                dataRetr.Select(ropDocument => new RopDataSaved()
                 {
                     ID = ropDocument.ID,
-                    Name = loader.GetType().AssemblyQualifiedName,
+                    Name = type.AssemblyQualifiedName,
                     Document = ropDocument
                 }));
-
 
             using (var rep = new Repository<RopDataSaved>())
             {
@@ -216,16 +110,7 @@ namespace ROPLoadDataConsole
             }
             
         }
-        static async Task<IRopLoader> GetOrLoad(Type type,JudetFinder judFinder)
-        {
-            //await Task.Delay(1000);
-            var loaderData = Activator.CreateInstance(type) as IRopLoader;
-            loaderData.Init(judFinder);
-
-            var d = await loaderData.GetData();
-            write(d);
-            return loaderData;
-        }
+        
         private static void write(RopDocument[] d)
         {
             foreach (var doc in d)

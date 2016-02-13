@@ -15,24 +15,140 @@ using Raven.Client.Indexes;
 using Raven.Database.Server.Connections;
 using Raven.Database.Storage;
 using ROPObjects;
+using ROPSiruta;
 
 namespace ROPInfrastructure
 {
-    class instanceRavenStore
+    public class instanceRavenStore
     {
-
+        private static JudetFinder judFinder;
         internal static EmbeddableDocumentStore instanceDefault;
         static instanceRavenStore()
         {
 
             instanceDefault = new EmbeddableDocumentStore();
+            //instanceDefault.Configuration.Settings.Add("Raven/MaxSecondsForTaskToWaitForDatabaseToLoad", "60");
             instanceDefault.ConnectionStringName = "RavenDB";
             instanceDefault.Conventions.FindIdentityPropertyNameFromEntityName = (entity) => "ID";
 
 
             instanceDefault.Initialize();
+            var jud = Judete().Result;
+            judFinder = new JudetFinder();
+            judFinder.judete = jud;
+            judFinder.altNumeJudet = GetAlternate(jud);
             
 
+        }
+
+        static AlternateNamesJudet[] GetAlternate(Judet[] jud)
+        {
+            var alternateNames = new List<AlternateNamesJudet>();
+            Func<string, string, AlternateNamesJudet> a = (altNume, Nume) =>
+            {
+                altNume = altNume.ToLower();
+                Nume = Nume.ToLower();
+                var alt = new AlternateNamesJudet();
+                alt.IDJudet = jud.First(it => it.Nume.ToLower() == Nume).ID;
+                alt.AlternateName = altNume;
+                return alt;
+            };
+
+            alternateNames.Add(a("argeş", "arges"));
+
+            alternateNames.Add(a("bacău", "bacau"));
+            alternateNames.Add(a("Bistriţa-N.", "BISTRITA-NASAUD"));
+            alternateNames.Add(a("Botoşani", "Botosani"));
+            alternateNames.Add(a("braşov", "Brasov"));
+            alternateNames.Add(a("brăila", "braila"));
+            alternateNames.Add(a("buzău", "buzau"));
+            alternateNames.Add(a("caraş-s.", "CARAS-SEVERIN"));
+            alternateNames.Add(a("călăraşi", "calarasi"));
+            alternateNames.Add(a("constanţa", "Constanta"));
+            alternateNames.Add(a("dâmboviţa", "dimbovita"));
+            alternateNames.Add(a("dambovita", "dimbovita"));
+            alternateNames.Add(a("galaţi", "galati"));
+            alternateNames.Add(a("ialomiţa", "ialomita"));
+            alternateNames.Add(a("iaşi", "iasi"));
+            alternateNames.Add(a("maramureş", "maramures"));
+            alternateNames.Add(a("mehedinţi", "mehedinti"));
+            alternateNames.Add(a("mureş", "mures"));
+            alternateNames.Add(a("neamţ", "neamt"));
+            alternateNames.Add(a("satu-mare", "satu_mare"));
+            alternateNames.Add(a("sălaj", "salaj"));
+            alternateNames.Add(a("timiş", "timis"));
+            alternateNames.Add(a("vâlcea", "vilcea"));
+            alternateNames.Add(a("valcea", "vilcea"));
+            alternateNames.Add(a("m.bucureşti", "bucuresti"));
+
+
+
+
+
+            //using (var rep = new Repository<AlternateNamesJudet>())
+            //{
+            //    await rep.StoreDataAsNew(alternateNames);
+            //}
+            return alternateNames.ToArray();
+        }
+
+        public static async Task<Judet[]> Judete()
+        {
+            if (judFinder != null)
+            {
+                return judFinder.judete;
+            }
+            using (var rep = new Repository<Judet>())
+            {
+                var exists = rep.ExistsData();
+                if (!exists)
+                {
+                    Console.WriteLine("save judete to local");
+                    var sl = new SirutaLoader();
+                    var jud = (await sl.InitJudete()).ToArray();
+                    var ms = await rep.StoreDataAsNew(jud);
+
+                }
+
+                Console.WriteLine("get data from local");
+                return rep.RetrieveData().ToArray();
+
+
+
+            }
+        }
+        public static async Task<RopDataSaved[]> DataSaved()
+        {
+            var listTasks = new List<Task<IRopLoader>>();
+            using (var rep = new Repository<RopDataSaved>())
+            {
+
+                var data = rep.RetrieveData();
+                if (data != null)
+                {
+                    var arrData = data.ToArray();
+
+                    return arrData;
+
+                }
+
+            }
+            return null;
+
+        }
+
+        public static async Task<RopDocument[]> GetOrLoad(RopDataSaved data)
+        {
+            var type = Type.GetType(data.Name);
+            return await GetOrLoad(type);
+        }
+        public static async Task<RopDocument[]> GetOrLoad(Type typeIRopLoader)
+        {
+            //await Task.Delay(1000);
+            var loaderData = Activator.CreateInstance(typeIRopLoader) as IRopLoader;
+            loaderData.Init(judFinder);
+            var d = await loaderData.GetData();            
+            return d;
         }
     }
     public class Repository<T>:IDisposable
@@ -60,6 +176,7 @@ namespace ROPInfrastructure
             var settingsRep = new Dictionary<string, string>();
             settingsRep.Add("Raven/DataDir",  dbName);
             settingsRep.Add("Raven/Voron/TempPath", dbName + "/Temp");
+            
 
             instanceDefault.DatabaseCommands.GlobalAdmin.CreateDatabase(new DatabaseDocument()
             {
@@ -67,8 +184,8 @@ namespace ROPInfrastructure
                 Settings = settingsRep
 
             });
+            instanceDefault.DatabaseCommands.GlobalAdmin.EnsureDatabaseExists(dbName);
             
-            await Task.Delay(2000);
             return dbName;
 
         }
