@@ -8,7 +8,7 @@ namespace ROPObjects
 {
     public class RopDocument:IID
     {
-        public string TypeName { get; set; }
+        
         public string ID { get; set; }
         public Uri PathDocument { get; set; }
         public string Name { get; set; }

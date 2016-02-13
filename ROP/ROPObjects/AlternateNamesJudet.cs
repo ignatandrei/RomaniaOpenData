@@ -6,6 +6,6 @@ namespace ROPObjects
         public string ID { get; set; }
         public string AlternateName { get; set; }
 
-        public string TypeName { get; set; }
+        
     }
 }

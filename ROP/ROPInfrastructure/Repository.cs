@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,39 +9,74 @@ using System.Threading;
 using System.Threading.Tasks;
 using Raven.Abstractions.Data;
 using Raven.Client;
+using Raven.Client.Document;
 using Raven.Client.Embedded;
 using Raven.Client.Indexes;
+using Raven.Database.Server.Connections;
+using Raven.Database.Storage;
 using ROPObjects;
 
 namespace ROPInfrastructure
 {
-    public class Repository<T>:IDisposable
-        where T:IID
+    class instanceRavenStore
     {
-        private string nameType;
-        private static EmbeddableDocumentStore instance;
-        public Repository()
+
+        internal static EmbeddableDocumentStore instanceDefault;
+        static instanceRavenStore()
         {
-            nameType = typeof (T).FullName;
+
+            instanceDefault = new EmbeddableDocumentStore();
+            instanceDefault.ConnectionStringName = "RavenDB";
+            instanceDefault.Conventions.FindIdentityPropertyNameFromEntityName = (entity) => "ID";
+
+
+            instanceDefault.Initialize();
             
 
         }
+    }
+    public class Repository<T>:IDisposable
+        where T:IID
+    {
+        public string Type { get; set; }
+        private string FullNameType;
+
+        static EmbeddableDocumentStore instanceDefault;
 
         static Repository()
         {
-            instance = new EmbeddableDocumentStore();
-            instance.ConnectionStringName = "RavenDB";
-            instance.Conventions.FindIdentityPropertyNameFromEntityName = (entity) => "ID";
-            instance.Initialize();
-            
-            //var settings1=new Dictionary<string, string>();
-            //settings1.Add("Raven/DataDir", "~/Databases/andrei1");
-            //instance.DatabaseCommands.GlobalAdmin.CreateDatabase(new DatabaseDocument()
-            //{
-            //     Id="andrei1",
-            //     Settings =settings1
+            instanceDefault = instanceRavenStore.instanceDefault;
 
-            //});
+        } 
+
+        
+
+        async Task<string> CreateDatabase()
+        {
+            string dbName = DatabaseName();
+            if (ExistsData())
+                return dbName; 
+            
+            var settingsRep = new Dictionary<string, string>();
+            settingsRep.Add("Raven/DataDir",  dbName);
+            settingsRep.Add("Raven/Voron/TempPath", dbName + "/Temp");
+
+            instanceDefault.DatabaseCommands.GlobalAdmin.CreateDatabase(new DatabaseDocument()
+            {
+                Id = DatabaseName(),
+                Settings = settingsRep
+
+            });
+            
+            await Task.Delay(2000);
+            return dbName;
+
+        }
+        public Repository(string type = null)
+        {
+            Type = type;
+            FullNameType = typeof(T).FullName;
+            //ConnectInstance(null);
             //var settings2 = new Dictionary<string, string>();
             //settings2.Add("Raven/DataDir", "~/Databases/andrei2");
             //instance.DatabaseCommands.GlobalAdmin.CreateDatabase(new DatabaseDocument()
@@ -50,88 +86,99 @@ namespace ROPInfrastructure
 
             //});
         }
-        string IndexName(string type)
+        
+
+        string DatabaseName()
         {
-            return string.Format("{0}/{1}", nameType + (type ?? "") , "ById");
+            return  (FullNameType + (Type ?? "")).Replace(".", "_");
         }
-        public bool ExistsData(string type=null)
+        public bool ExistsData()
         {
-            string indexName = IndexName(type);
-            var index = instance.DatabaseCommands.GetIndex(indexName);
-            return (index != null);
+            //string indexName = IndexName();
+            //var index = instance.DatabaseCommands.GetIndex(indexName);
+            //return (index != null);
+            string databaseName = DatabaseName();
+            var dbNames = instanceDefault.DatabaseCommands.GlobalAdmin.GetDatabaseNames(10000);
+            return (dbNames.Contains(DatabaseName()));
+
         }
-        public IEnumerable<T> RetrieveData(string type=null)
+        public IEnumerable<T> RetrieveData()
         {
-            string indexName = IndexName(type);
-            if(!ExistsData(type))
+            
+            if(!ExistsData())
                 yield break;
 
-            using (var session = instance.OpenSession())
+
+            //using (var instance = ConnectInstance(DatabaseName()))
             {
 
-                var query = session.Query<T>(indexName).Where(it=>it.TypeName == indexName);
-                using (var res = session.Advanced.Stream(query))
+                var config = instanceDefault.DatabaseCommands.ForDatabase(DatabaseName()).Admin.GetDatabaseConfiguration();                                
+                using (var session = instanceDefault.OpenSession(DatabaseName()))
                 {
-                    while (res.MoveNext())
+                    session.Advanced.UseOptimisticConcurrency = true;
+                    var indexName = new RavenDocumentsByEntityName().IndexName;
+
+                    var query = session.Query<T>(indexName);
+                    using (var res = session.Advanced.Stream(query))
                     {
-                        yield return res.Current.Document;
+                        while (res.MoveNext())
+                        {
+                            yield return res.Current.Document;
+                        }
                     }
+
+
                 }
-
-
             }
         }
 
-        public void DeleteData(string type = null)
+        public void DeleteData()
         {
-            string indexName = IndexName(type);
-
-            if (ExistsData(type))
+            if (ExistsData())
             {
-                instance.DatabaseCommands.DeleteByIndex(indexName, new IndexQuery() { Query = "TypeName:" + indexName} );
-                instance.DatabaseCommands.DeleteIndex(indexName);
+                instanceDefault.DatabaseCommands.GlobalAdmin.DeleteDatabase(DatabaseName(),true);
+                
             }
         }
-        public async Task<long> StoreDataAsNew(T[] data, string type=null)            
+        public async Task<long> StoreDataAsNew(T[] data)            
         {
             var sw=new Stopwatch();
             sw.Start();
-            string indexName = IndexName(type);
-            foreach (var item in data)
-            {
-                item.TypeName = indexName;
-            }   
-
-            DeleteData(type);
             
-            using (var bulkInsert = instance.BulkInsert())
+            DeleteData();
+            await CreateDatabase();
+            //using (var instance = ConnectInstance(DatabaseName()))
             {
-                
-                foreach (var id in data)
+                using (var bulkInsert = instanceDefault.BulkInsert(DatabaseName()))
                 {
-                    bulkInsert.Store(id);
+
+                    foreach (var id in data)
+                    {
+                        bulkInsert.Store(id, id.ID);
+
+                    }
 
                 }
-
+                
+                var dbc = instanceDefault.DatabaseCommands.ForDatabase(DatabaseName());
+                var defIndex = new RavenDocumentsByEntityName();
+                
+                defIndex.Execute(dbc,new DocumentConvention()
+                {
+                    DefaultUseOptimisticConcurrency = true                    
+                    
+                } );
+                instanceDefault.ExecuteIndex(defIndex);
             }
-            instance.DatabaseCommands.PutIndex(indexName,
-                                        new IndexDefinitionBuilder<T>
-                                        { 
-                                            Map = posts => from post in posts                                                              
-                                                           select new { post.ID, post.TypeName }
-                                            //               ,
-                                            //Reduce = results => from result in results
-                                            //                    group result by result.TypeName into g
-                                            //                    select g.Key;                                            
-                                        });
             sw.Stop();
+
             await Task.Delay(2000);//to can retrieve after
             return sw.ElapsedMilliseconds;
         }
 
         public void Dispose()
         {
-            instance.Dispose();
+            
         }
     }
 }

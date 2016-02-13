@@ -36,9 +36,9 @@ namespace ROPInfrastructure
         public async Task<RopDocument[]> GetData()
         {
             var type = this.GetType().FullName;
-            using (var rep = new Repository<RopDocument>())
+            using (var rep = new Repository<RopDocument>(type))
             {
-                var exists = rep.ExistsData(type);
+                var exists = rep.ExistsData();
                 if (!exists)
                 {
                     var rd = await FillDate();
@@ -47,10 +47,10 @@ namespace ROPInfrastructure
                     {
                         throw new ArgumentException("not id for" + notId.Name + "-- " + notId.PathDocument);
                     }
-                    await rep.StoreDataAsNew(rd, type);
+                    await rep.StoreDataAsNew(rd);
                 }
 
-                var data = rep.RetrieveData(type);
+                var data = rep.RetrieveData();
                 return data.ToArray();
             }
         }

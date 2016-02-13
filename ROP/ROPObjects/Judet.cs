@@ -8,7 +8,7 @@ namespace ROPObjects
 {
     public class Judet:IID
     {
-        public string TypeName { get; set; }
+        
         public string Nume { get; set; }
         public string Cod { get; set; }
 

@@ -137,8 +137,16 @@ namespace ROPLoadDataConsole
                         listTasks.Add(GetOrLoad(type, jud));
 
                     }
-
-                    await Task.WhenAll(listTasks.ToArray());
+                    try
+                    {
+                        await Task.WhenAll(listTasks.ToArray());
+                    }
+                    catch (Exception ex)
+                    {
+                        var s = ex.StackTrace;
+                        throw;
+                    }
+                    
                     
                 }
 
@@ -160,13 +168,7 @@ namespace ROPLoadDataConsole
                 Console.WriteLine(judet.Nume);
             }
 
-            var UAT = GetUAT(judete).Result;
-            foreach (var uat in UAT)
-            {
-
-                // Console.WriteLine(uat.UatTip +"---" +uat.Nume + "---" + uat.Judet.Nume);
-
-            }
+            
             var judFinder=new JudetFinder();
             judFinder.judete = judete;
             judFinder.altNumeJudet = GetAlternate(judete);
@@ -179,10 +181,10 @@ namespace ROPLoadDataConsole
                 var ex = aggEx.InnerExceptions.FirstOrDefault();
                 throw;
             }
-            
-            
+          
             
             return;
+            
 
             var dataSaved=new List<RopDataSaved>();
             
@@ -214,8 +216,9 @@ namespace ROPLoadDataConsole
             }
             
         }
-        static async Task<IRopLoader> GetOrLoad(Type type,JudetFinder judFinder) 
+        static async Task<IRopLoader> GetOrLoad(Type type,JudetFinder judFinder)
         {
+            //await Task.Delay(1000);
             var loaderData = Activator.CreateInstance(type) as IRopLoader;
             loaderData.Init(judFinder);
 
