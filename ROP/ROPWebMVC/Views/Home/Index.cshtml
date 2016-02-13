@@ -29,7 +29,8 @@
 
                 <input type="checkbox" id="@item.ID" name="series"/>
                 <label for="@item.ID">@item.Document.Name</label>
-                <input type="text" disabled="disabled" id="@string.Format("multiply{0}",item.ID)" value="1" onblur="javascript:ShowData()"/>
+                <input type="text" disabled="disabled" id="@string.Format("multiply{0}", item.ID)" value="1" onblur="javascript:ShowData()" size="4"/>
+                <button disabled="disabled" name="export" id='@string.Format("export{0}", item.ID)' value="@item.ID">Export</button>
             </p>
         }
 
@@ -45,19 +46,20 @@
             @foreach (var s in jud)
             {
                 <text>
-                <input type="checkbox" id="@s" name="judet" checked="checked" value="@s"/>
-                <label for="@s">@s</label>
+                    <input type="checkbox" id="@s" name="judet" checked="checked" value="@s"/>
+                    <label for="@s">@s</label>
                 </text>
             }
         </p>
+        
     </div>
+
 
 
 </div>
 @section scripts
 {
     <script>
-
         var arrData = [];
         $(document).ready(function() {
             $('input[type="checkbox"][name="series"]').change(function() {
@@ -68,6 +70,10 @@
 
             $('input[type="checkbox"][name="judet"]').change(function() {
                 ShowData();
+            });
+            $('button[name="export"]').click(function() {
+                var id= $(this).val();
+                ExportData(id);
             });
         });
 
@@ -92,6 +98,7 @@
                     //chk.addClass("done");
                     var data = { id: id, data: data, show: true };
                     $("#multiply" + id).prop("disabled", false);
+                    $("#export" + id).prop("disabled", false);
                     arrData.push(data);
                 });
             }
@@ -103,7 +110,61 @@
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script>
         var Judete = @Html.Raw(str);
+        
+        function ExportData(id) {
+            debugger;
+            
+            
+            var result = $.grep(arrData.splice(0), function(e) { return e.id == id; });
+            var exportDataArr = result[0].data.Document.Data.splice(0).map(
+                function(el) {
+                    
+                    return { judet: el.Judet.Nume, valoare: el.Valoare };
+                }
+            );
+            if (exportDataArr.length == 0)
+                return;
+            var dataExport = JSON.stringify(exportDataArr);
+            var id=5;//5=xlsx, 4=docx, 3 = pdf
+            var urlData='http://exporter.azurewebsites.net/api/export/ExportFromJSON/' + id;
+            Export(urlData, id, dataExport);
+            return false;
 
+
+        }
+        function findExtension(id) {
+            switch (id) {
+                case 5:
+                    return "xlsx";
+                case 4:
+                    return "docx";
+                case 3:
+                    return "pdf";
+                default:
+                    return "notKnown" + id;
+            }
+        }
+        function Export(urlExport,id, data) {
+            var ext = findExtension(id);
+            //step 1 - post data
+            $.ajax({
+                type: "POST",
+                url: urlExport,
+                data: JSON.stringify({ 'data': data }),
+                datatype: "JSON",
+                contentType: "application/json; charset=utf-8"
+            })
+            .done(function(result) {
+                //step 2 - obtain file
+                var urlDownload = 'http://exporter.azurewebsites.net/api/export/GetFile/' + result;
+                urlDownload += "?fileName=andrei&extension="+ext;
+                window.location=urlDownload;
+            })
+            .fail(function(f) {
+                alert("error:" + f.responseText);
+            });
+        }
+        
         function ShowData() {
             var initialJudete=Judete.slice(0);
             
@@ -119,7 +180,8 @@
             var categoriesJudete = [];
 
             jQuery.grep(initialJudete, function(el) {
-                if (jQuery.inArray(el, arrayCheckedJudete) == -1) categoriesJudete.push(el);
+                if (jQuery.inArray(el, arrayCheckedJudete) == -1)
+                    categoriesJudete.push(el);
             });
 
             //TODO:use MVVM
@@ -158,7 +220,9 @@
                 seriesData.push(dataDocument);
 
             }
-
+            
+            
+            
             $('#container').highcharts({
                 chart: {
                     type: 'spline'
