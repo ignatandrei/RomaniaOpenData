@@ -28,8 +28,8 @@ namespace ROPWebMVC
             var judete = instanceRavenStore.Judete().Result;
             var nume = judete.Select(it => it.Nume).OrderBy(it=>it).ToArray();
             Application["judete"] = nume;
-            var dataSv = instanceRavenStore.DataSaved().Result;
-            Application["DataSaved"] = dataSv;
+            
         }
+        
     }
 }

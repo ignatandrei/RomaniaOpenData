@@ -208,6 +208,7 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Service References\Application Insights\ConnectedService.json" />
+    <Content Include="Views\Home\LoadData.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -232,6 +233,10 @@
     <ProjectReference Include="..\ROPInfrastructure\ROPInfrastructure.csproj">
       <Project>{D7A069F0-B74A-4199-A59E-0BD2C8303D5C}</Project>
       <Name>ROPInfrastructure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ROPMinisterulSanatatii\ROPMinisterulSanatatii.csproj">
+      <Project>{1D2D6739-75B8-4109-B05E-D84B988968AB}</Project>
+      <Name>ROPMinisterulSanatatii</Name>
     </ProjectReference>
     <ProjectReference Include="..\ROPObjects\ROPObjects.csproj">
       <Project>{df7a557b-39a8-42dd-ba4a-e3de140c9ee2}</Project>

@@ -1,24 +1,25 @@
-﻿@using Raven.Abstractions.Extensions
+﻿@model RopDataSaved[]
+@using Raven.Abstractions.Extensions
 @using ROPInfrastructure
 @{
     ViewBag.Title = "Home Page";
-    var data =AppState["DataSaved"] as RopDataSaved[];
+    var data =Model;
     var jud= AppState["judete"] as string[];
-    var judStr = jud.Select(it => "'" + it + "'").ToArray();
+    var judStr = Enumerable.Select(jud, it => "'" + it + "'").ToArray();
     var str = string.Join(",", judStr);
     str = "[" + str + "]";
 
 }
 
 <div class="jumbotron">
-    <h1>Romanian open data</h1>
+    <h1>Romanian open data : Seturi @Model.Length</h1>
     <p class="lead">Va lasa sa alegeti si sa afisati corelatiile intre datele publicate de pe data.gov.ro</p>
     <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
 </div>
 
 <div class="row">
     <div class="col-md-2">
-        <h2>Alegeti seturile de date</h2>
+        <h2>Alegeti</h2>
 
 
         @foreach (var item in data)

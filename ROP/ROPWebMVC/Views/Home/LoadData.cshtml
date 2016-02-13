@@ -1,0 +1,13 @@
+﻿@using ROPMinisterulSanatatii
+
+@{
+    ViewBag.Title = "LoadData";
+}
+
+<h2>LoadData</h2>
+<p>
+    <a href="@Url.Action("LoadData", new {id = typeof (Medici).AssemblyQualifiedName.Replace(".", "_")})">Medici</a>
+</p>
+<p>
+    <a href="@Url.Action("LoadData", new {id = typeof (Farmacii).AssemblyQualifiedName.Replace(".", "_")})">Farmacii</a>
+</p>

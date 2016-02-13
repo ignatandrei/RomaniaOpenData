@@ -29,19 +29,22 @@ namespace ROPInfrastructure
     {
         public static void BackupAllDatabase(string path)
         {
-            return;           
+            return;
             instanceDefault.DocumentDatabase.Maintenance.StartBackup(Path.Combine(path, "SYSTEM"), false,
                 new DatabaseDocument());
             var def = instanceDefault.DatabaseCommands.ForSystemDatabase().GlobalAdmin.GetDatabaseNames(10000);
             foreach (var s in def)
             {
                 Console.WriteLine(s);
-                instanceDefault.DatabaseCommands.GlobalAdmin.StartBackup(Path.Combine(path,s), new DatabaseDocument(), false, s);
+                instanceDefault.DatabaseCommands.GlobalAdmin.StartBackup(Path.Combine(path, s), new DatabaseDocument(),
+                    false, s);
             }
-            
+
         }
+
         private static JudetFinder judFinderCache;
         internal static EmbeddableDocumentStore instanceDefault;
+
         static instanceRavenStore()
         {
 
@@ -52,19 +55,20 @@ namespace ROPInfrastructure
 
             try
             {
-                NonAdminHttp.EnsureCanListenToWhenInNonAdminContext(8080);
-                instanceDefault.UseEmbeddedHttpServer = true;
+                //To try in debug mode
+                //NonAdminHttp.EnsureCanListenToWhenInNonAdminContext(8080);
+                //instanceDefault.UseEmbeddedHttpServer = true;
                 instanceDefault.Initialize();
-                
+
             }
             catch (ReflectionTypeLoadException ex)
             {
                 string message = "LoaderExceptions:";
-                ex.LoaderExceptions.ForEach(it=>message+=it.Message + ";");
+                ex.LoaderExceptions.ForEach(it => message += it.Message + ";");
                 throw new Exception(message, ex);
             }
-           
-           
+
+
             //instanceDefault.DatabaseCommands.GlobalAdmin.StartBackup(@"D:\a\", new DatabaseDocument(), false, );
         }
 
@@ -163,6 +167,7 @@ namespace ROPInfrastructure
 
             }
         }
+
         public static async Task<RopDataSaved[]> DataSaved()
         {
             var listTasks = new List<Task<IRopLoader>>();
@@ -188,15 +193,23 @@ namespace ROPInfrastructure
             var type = Type.GetType(data.Name);
             return await GetOrLoad(type);
         }
+
         public static async Task<RopDocument[]> GetOrLoad(Type typeIRopLoader)
         {
             //await Task.Delay(1000);
             var loaderData = Activator.CreateInstance(typeIRopLoader) as IRopLoader;
             loaderData.Init(judFinder);
-            var d = await loaderData.GetData();            
+            var d = await loaderData.GetData();
             return d;
         }
+
+        public static async Task<RopDocument[]> GetOrLoad(string typeName)
+        {
+            var type = Type.GetType(typeName);
+            return await GetOrLoad(type);
+        }
     }
+
     public class Repository<T>:IDisposable
         where T:IID
     {
