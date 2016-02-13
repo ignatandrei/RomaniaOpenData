@@ -1,17 +1,24 @@
-﻿@using ROPInfrastructure
+﻿@using ROPAE
+@using ROPEvidenta
+@using ROPInfrastructure
 @using ROPMinisterulSanatatii
+@using ROPPI
 
 @{
     ViewBag.Title = "LoadData";
     var data = AppState["dataSaved"] as RopDataSaved[];
     var names=Enumerable.Select(data, it => it.Name).Distinct().ToArray();
     Func<string,string> html=(str) => str.Replace(".", "_");
-    
+
     var existingData = new[]
     {
 
         new Tuple<string, string, bool>("Medici",html( typeof (Medici).AssemblyQualifiedName), names.Contains(typeof (Medici).AssemblyQualifiedName)),
         new Tuple<string, string, bool>("Farmacii", html(typeof (Farmacii).AssemblyQualifiedName), names.Contains(typeof (Farmacii).AssemblyQualifiedName)),
+        new Tuple<string, string, bool>("Electoral", html(typeof (StatisticaLocalitati).AssemblyQualifiedName), names.Contains(typeof (StatisticaLocalitati).AssemblyQualifiedName)),
+        new Tuple<string, string, bool>("Casatorii", html(typeof (Casatorii).AssemblyQualifiedName), names.Contains(typeof (Casatorii).AssemblyQualifiedName)),
+        new Tuple<string, string, bool>("ParcAuto", html(typeof (ParcAuto).AssemblyQualifiedName), names.Contains(typeof (ParcAuto).AssemblyQualifiedName))
+        
 
     };
 }

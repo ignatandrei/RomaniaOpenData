@@ -17,7 +17,7 @@ namespace ROPCommon
 
         public static string BuildExcel2007ConnectionString(string Filename, bool FirstRowContainsHeaders)
         {
-            return string.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source ={ 0}; Extended Properties =\"Excel 12.0;HDR={1}\";",
+            return string.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source ='{0}'; Extended Properties =\"Excel 12.0;HDR={1}\";",
         Filename.Replace("'", "''"), FirstRowContainsHeaders ? "Yes" : "No");
 
         }

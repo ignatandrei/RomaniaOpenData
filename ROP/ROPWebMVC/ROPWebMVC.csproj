@@ -229,9 +229,17 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ROPAE\ROPAE.csproj">
+      <Project>{7e9af2c0-cc6d-4034-b4d1-559d1f343bb2}</Project>
+      <Name>ROPAE</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ROPCommon\ROPCommon.csproj">
       <Project>{3c5adb04-acb6-494a-9651-df7021a9548a}</Project>
       <Name>ROPCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ROPEvidenta\ROPEvidenta.csproj">
+      <Project>{DBB5264D-0AA0-434E-A246-343BA680961E}</Project>
+      <Name>ROPEvidenta</Name>
     </ProjectReference>
     <ProjectReference Include="..\ROPInfrastructure\ROPInfrastructure.csproj">
       <Project>{D7A069F0-B74A-4199-A59E-0BD2C8303D5C}</Project>
@@ -244,6 +252,10 @@
     <ProjectReference Include="..\ROPObjects\ROPObjects.csproj">
       <Project>{df7a557b-39a8-42dd-ba4a-e3de140c9ee2}</Project>
       <Name>ROPObjects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ROPPI\ROPPI.csproj">
+      <Project>{A5EC06E3-82C8-4742-8279-B27BED1377E3}</Project>
+      <Name>ROPPI</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

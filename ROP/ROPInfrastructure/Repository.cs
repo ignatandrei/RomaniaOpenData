@@ -108,13 +108,18 @@ namespace ROPInfrastructure
 
             alternateNames.Add(a("bacău", "bacau"));
             alternateNames.Add(a("Bistriţa-N.", "BISTRITA-NASAUD"));
+            alternateNames.Add(a("bistriţa-năsăud", "BISTRITA-NASAUD"));
+            alternateNames.Add(a("bistrita nasaud", "BISTRITA-NASAUD"));
             alternateNames.Add(a("Botoşani", "Botosani"));
             alternateNames.Add(a("braşov", "Brasov"));
             alternateNames.Add(a("brăila", "braila"));
             alternateNames.Add(a("buzău", "buzau"));
             alternateNames.Add(a("caraş-s.", "CARAS-SEVERIN"));
+            alternateNames.Add(a("caras severin", "CARAS-SEVERIN"));
+            alternateNames.Add(a("caraş-severin", "CARAS-SEVERIN"));
             alternateNames.Add(a("călăraşi", "calarasi"));
             alternateNames.Add(a("constanţa", "Constanta"));
+            alternateNames.Add(a("dîmboviţa", "dimbovita"));
             alternateNames.Add(a("dâmboviţa", "dimbovita"));
             alternateNames.Add(a("dambovita", "dimbovita"));
             alternateNames.Add(a("galaţi", "galati"));
@@ -125,11 +130,20 @@ namespace ROPInfrastructure
             alternateNames.Add(a("mureş", "mures"));
             alternateNames.Add(a("neamţ", "neamt"));
             alternateNames.Add(a("satu-mare", "satu_mare"));
+            alternateNames.Add(a("satu mare", "satu_mare"));
             alternateNames.Add(a("sălaj", "salaj"));
             alternateNames.Add(a("timiş", "timis"));
             alternateNames.Add(a("vâlcea", "vilcea"));
             alternateNames.Add(a("valcea", "vilcea"));
             alternateNames.Add(a("m.bucureşti", "bucuresti"));
+            alternateNames.Add(a("bucureşti", "bucuresti"));
+            alternateNames.Add(a("sector 1", "bucuresti"));
+            alternateNames.Add(a("sector 2", "bucuresti"));
+            alternateNames.Add(a("sector 3", "bucuresti"));
+            alternateNames.Add(a("sector 4", "bucuresti"));
+            alternateNames.Add(a("sector 5", "bucuresti"));
+            alternateNames.Add(a("sector 6", "bucuresti"));
+
 
 
 

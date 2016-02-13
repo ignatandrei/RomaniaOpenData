@@ -8,7 +8,19 @@ namespace ROPObjects
 {
     public class RopDocument:IID
     {
-        
+        public RopDocument()
+        {
+            
+        }
+        public RopDocument(RopDocument rd)
+        {
+            this.Name = rd.Name;
+            this.AvailableOn = rd.AvailableOn;
+            this.Description = rd.Description;
+            this.PathDocument = rd.PathDocument;
+            this.WebPage = rd.WebPage;
+
+        }
         public string ID { get; set; }
         public Uri PathDocument { get; set; }
         public string Name { get; set; }
