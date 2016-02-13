@@ -1,0 +1,148 @@
+﻿@using Raven.Abstractions.Extensions
+@using ROPInfrastructure
+@{
+    ViewBag.Title = "Home Page";
+    var data =AppState["DataSaved"] as RopDataSaved[];
+    var jud= AppState["judete"] as string[];
+    var judStr = jud.Select(it => "'" + it + "'").ToArray();
+    var str = string.Join(",", judStr);
+    str = "[" + str + "]";
+
+}
+
+<div class="jumbotron">
+    <h1>Romanian open data</h1>
+    <p class="lead">Va lasa sa alegeti si sa afisati corelatiile intre datele publicate de pe data.gov.ro</p>
+    <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+</div>
+
+<div class="row">
+    <div class="col-md-2">
+        <h2>Alegeti seturile de date</h2>
+
+
+        @foreach (var item in data)
+        {
+
+            <p>
+
+                <input type="checkbox" id="@item.ID"/>
+                <label for="@item.ID">@item.Document.Name</label>
+
+            </p>
+        }
+
+
+
+        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a>
+        </p>
+    </div>
+    <div class="col-md-10">
+        <h2>Show</h2>
+        <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+    </div>
+
+</div>
+@section scripts
+{
+    <script>
+
+        var arrData = [];
+        $(document).ready(function() {
+            $('input[type="checkbox"]').change(function() {
+                var chk = $(this);
+                DownloadResource(chk);
+                ShowData();
+            });
+        });
+
+
+        function DownloadResource(chk) {
+            var check = chk.prop('checked');
+            var id = chk.prop('id');
+            var result = $.grep(arrData, function(e) { return e.id == id; });
+
+            var exists = (result.length > 0);
+            if (exists) {
+                result[0].show = check;
+            }
+            if (check && (!exists)) {
+                var url = '@Url.Content("~/api/RopDataSaved/")' + id;
+                //window.open(url);
+                $.ajax({
+                    url: url,
+                    async: false
+                }).done(function(data) {
+                    //chk.addClass("done");
+                    var data = { id: id, data: data, show: true };
+                    arrData.push(data);
+                });
+            }
+        }
+
+
+    </script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script>
+        var categoriesJudete = @Html.Raw(str);
+
+        function ShowData() {
+
+            var result = $.grep(arrData, function(e) { return e.show; });
+            var existsData = (result.length > 0);
+
+            $('#container').toggle(existsData);
+            if (!existsData)
+                return;
+
+            var title = "Serii de date";
+            var seriesData = [];
+            for (var i = 0; i < result.length; i++) {
+
+                var doc = result[i].data.Document;
+                var dataDocument = {};
+                dataDocument.name = doc.Name;
+                dataDocument.data = [];
+                for (var jud = 0; jud < categoriesJudete.length; jud++) {
+                    var judet = categoriesJudete[jud];
+                    var val = $.grep(doc.Data, function(e) { return e.Judet.Nume == judet; });
+                    var valoare = val[0].Valoare;
+                    dataDocument.data.push(valoare);
+
+                }
+                seriesData.push(dataDocument);
+
+            }
+
+            $('#container').highcharts({
+                chart: {
+                    type: 'line'
+                },
+                title: {
+                    text: title
+                },
+                subtitle: {
+                    text: 'Source: data.gov.ro'
+                },
+                xAxis: {
+                    categories: categoriesJudete
+                },
+                yAxis: {
+                    title: {
+                        text: 'Valori'
+                    }
+                },
+                plotOptions: {
+                    line: {
+                        dataLabels: {
+                            enabled: true
+                        },
+                        enableMouseTracking: false
+                    }
+                },
+                series: seriesData
+            });
+        }
+    </script>
+}

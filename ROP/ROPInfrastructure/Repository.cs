@@ -3,15 +3,21 @@ using System.CodeDom;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Raven.Abstractions.Data;
+using Raven.Abstractions.Extensions;
 using Raven.Client;
 using Raven.Client.Document;
 using Raven.Client.Embedded;
 using Raven.Client.Indexes;
+using Raven.Database;
+using Raven.Database.Server;
 using Raven.Database.Server.Connections;
 using Raven.Database.Storage;
 using ROPObjects;
@@ -21,7 +27,20 @@ namespace ROPInfrastructure
 {
     public class instanceRavenStore
     {
-        private static JudetFinder judFinder;
+        public static void BackupAllDatabase(string path)
+        {
+            return;           
+            instanceDefault.DocumentDatabase.Maintenance.StartBackup(Path.Combine(path, "SYSTEM"), false,
+                new DatabaseDocument());
+            var def = instanceDefault.DatabaseCommands.ForSystemDatabase().GlobalAdmin.GetDatabaseNames(10000);
+            foreach (var s in def)
+            {
+                Console.WriteLine(s);
+                instanceDefault.DatabaseCommands.GlobalAdmin.StartBackup(Path.Combine(path,s), new DatabaseDocument(), false, s);
+            }
+            
+        }
+        private static JudetFinder judFinderCache;
         internal static EmbeddableDocumentStore instanceDefault;
         static instanceRavenStore()
         {
@@ -31,14 +50,41 @@ namespace ROPInfrastructure
             instanceDefault.ConnectionStringName = "RavenDB";
             instanceDefault.Conventions.FindIdentityPropertyNameFromEntityName = (entity) => "ID";
 
+            try
+            {
+                NonAdminHttp.EnsureCanListenToWhenInNonAdminContext(8080);
+                instanceDefault.UseEmbeddedHttpServer = true;
+                instanceDefault.Initialize();
+                
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+                string message = "LoaderExceptions:";
+                ex.LoaderExceptions.ForEach(it=>message+=it.Message + ";");
+                throw new Exception(message, ex);
+            }
+           
+           
+            //instanceDefault.DatabaseCommands.GlobalAdmin.StartBackup(@"D:\a\", new DatabaseDocument(), false, );
+        }
 
-            instanceDefault.Initialize();
-            var jud = Judete().Result;
-            judFinder = new JudetFinder();
-            judFinder.judete = jud;
-            judFinder.altNumeJudet = GetAlternate(jud);
-            
-
+        static JudetFinder judFinder
+        {
+            get
+            {
+                if (judFinderCache != null)
+                {
+                    return judFinderCache;
+                }
+                lock (instanceDefault)
+                {
+                    var jud = Judete().Result;
+                    judFinderCache = new JudetFinder();
+                    judFinderCache.judete = jud;
+                    judFinderCache.altNumeJudet = GetAlternate(jud);
+                    return judFinderCache;
+                }
+            }
         }
 
         static AlternateNamesJudet[] GetAlternate(Judet[] jud)
@@ -94,9 +140,9 @@ namespace ROPInfrastructure
 
         public static async Task<Judet[]> Judete()
         {
-            if (judFinder != null)
+            if (judFinderCache != null)
             {
-                return judFinder.judete;
+                return judFinderCache.judete;
             }
             using (var rep = new Repository<Judet>())
             {
@@ -219,6 +265,22 @@ namespace ROPInfrastructure
             return (dbNames.Contains(DatabaseName()));
 
         }
+
+        public T GetFromId(string id)
+        {
+            if (!ExistsData())
+                return default(T);
+
+
+            using (var session = instanceDefault.OpenSession(DatabaseName()))
+            {
+                //var indexName = new RavenDocumentsByEntityName().IndexName;
+
+                //var query = session.Query<T>(indexName);
+                return session.Load<T>(id);
+            }
+        }
+
         public IEnumerable<T> RetrieveData()
         {
             

@@ -52,9 +52,11 @@ namespace ROPLoadDataConsole
             //var dd = new DownloadData();
             //var dataBytes = dd.Data("http://www.date.gov.ro/dataset/3c128d2f-f4e2-47d5-ad11-a5602c1e4856/resource/61a73bc0-34c6-4067-b1c4-3ab659323c87/download/numrul-medicilor-pe-judee-i-ministere-din-sectorul-public-numrul-medicilor-pe-ministere-macroreg.xls").Result;
 
-            
-            //return;
 
+            //return;
+            instanceRavenStore.BackupAllDatabase(@"D:\github\test");
+            Thread.Sleep(1000 * 60*10);
+            return;
             var judete = instanceRavenStore.Judete().Result;
             foreach (var judet in judete)
             {
