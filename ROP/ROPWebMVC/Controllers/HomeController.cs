@@ -63,6 +63,21 @@ namespace ROPWebMVC.Controllers
             return View();
 
         }
+
+        public ActionResult ShowMap(string id)
+        {
+            var lst =this.HttpContext.Application["dataSaved"] as RopDataSaved[];
+            foreach (var ropDataSaved in lst)
+            {
+                if (ropDataSaved.ID == id)
+                {
+                    return View(ropDataSaved);
+                }
+
+            }
+            return Content("not found " + id);
+        }
+
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";

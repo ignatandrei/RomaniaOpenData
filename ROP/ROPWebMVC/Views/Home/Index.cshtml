@@ -31,6 +31,7 @@
                 <label for="@item.ID">@item.Document.Name</label>
                 <input type="text" disabled="disabled" id="@string.Format("multiply{0}", item.ID)" value="1" onblur="javascript:ShowData()" size="4"/>
                 <button disabled="disabled" name="export" id='@string.Format("export{0}", item.ID)' value="@item.ID">Export</button>
+                <button name="ShowMap" id="ShowMap" onclick="ShowMap('@item.ID')">harta</button>
             </p>
         }
 
@@ -60,6 +61,9 @@
 @section scripts
 {
     <script>
+        function ShowMap(id) {
+            window.open('@Url.Content("~/Home/ShowMap")' + '/' + id);
+        }
         var arrData = [];
         $(document).ready(function() {
             $('input[type="checkbox"][name="series"]').change(function() {
@@ -112,7 +116,7 @@
         var Judete = @Html.Raw(str);
         
         function ExportData(id) {
-            debugger;
+            //debugger;
             
             
             var result = $.grep(arrData.splice(0), function(e) { return e.id == id; });
@@ -134,35 +138,35 @@
         }
         function findExtension(id) {
             switch (id) {
-                case 5:
-                    return "xlsx";
-                case 4:
-                    return "docx";
-                case 3:
-                    return "pdf";
-                default:
-                    return "notKnown" + id;
+            case 5:
+                return "xlsx";
+            case 4:
+                return "docx";
+            case 3:
+                return "pdf";
+            default:
+                return "notKnown" + id;
             }
         }
         function Export(urlExport,id, data) {
             var ext = findExtension(id);
             //step 1 - post data
             $.ajax({
-                type: "POST",
-                url: urlExport,
-                data: JSON.stringify({ 'data': data }),
-                datatype: "JSON",
-                contentType: "application/json; charset=utf-8"
-            })
-            .done(function(result) {
-                //step 2 - obtain file
-                var urlDownload = 'http://exporter.azurewebsites.net/api/export/GetFile/' + result;
-                urlDownload += "?fileName=andrei&extension="+ext;
-                window.location=urlDownload;
-            })
-            .fail(function(f) {
-                alert("error:" + f.responseText);
-            });
+                    type: "POST",
+                    url: urlExport,
+                    data: JSON.stringify({ 'data': data }),
+                    datatype: "JSON",
+                    contentType: "application/json; charset=utf-8"
+                })
+                .done(function(result) {
+                    //step 2 - obtain file
+                    var urlDownload = 'http://exporter.azurewebsites.net/api/export/GetFile/' + result;
+                    urlDownload += "?fileName=andrei&extension="+ext;
+                    window.location=urlDownload;
+                })
+                .fail(function(f) {
+                    alert("error:" + f.responseText);
+                });
         }
         
         function ShowData() {
@@ -173,7 +177,7 @@
                 .filter(":not(:checked)")
                 .map(function(){
 
-                return $(this).val();
+                    return $(this).val();
 
                 });
             

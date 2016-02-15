@@ -1,0 +1,83 @@
+﻿@model ROPInfrastructure.RopDataSaved
+<link href="~/Scripts/leaflet/leaflet.css" rel="stylesheet"/>
+<link href="~/Scripts/leafletlabel/leaflet.label.css" rel="stylesheet"/>
+
+@{
+    ViewBag.Title = "ShowMap";
+    var data = Model.Document.Data;
+    var arrJavascriptText = "var arrJudete = [];";
+    decimal min=0 , max=0 ;
+    foreach (var item in data)
+    {
+        min = Math.Min(item.Valoare, min);
+        max = Math.Max(item.Valoare, max);
+        arrJavascriptText += Environment.NewLine;
+        arrJavascriptText += "arrJudete.push({judet:'" + item.Judet.Nume.ToLower() + "', val:" + item.Valoare + "});";
+    }
+}
+
+<h2>Show Map for @Model.Document.Name</h2>
+<div id="map" style="height: 600px"></div>
+
+
+@section scripts
+{
+    <script src="~/Scripts/leaflet/leaflet.js"></script>
+    <script src="~/Scripts/leafletlabel/leaflet.label.js"></script>
+    <script src="~/Scripts/judete_ro.geojson.js"></script>
+
+    <script>
+        @Html.Raw(arrJavascriptText);
+        function onEachFeature(feature, layer) {
+            if (feature.geometry && feature.geometry.type)
+                if (feature.geometry.type === 'Polygon') {
+
+                    // Get bounds of polygon
+                    var bounds = layer.getBounds();
+                    // Get center of bounds
+                    var center = bounds.getCenter();
+                    // Use center to put marker on map
+
+                    //var marker = L.marker(center)
+                    //    .bindLabel(feature.properties.NAME, { noHide: true })
+                    //    .bindPopup('Can has popup?')
+                    //    .addTo(map);
+                    var judet = feature.properties.NAME;
+                    var result = $.grep(arrJudete, function (e) { return e.judet == judet.toLowerCase(); });
+                    var val = '';
+                    if (result.length > 0) {
+                        val = result[0].val;
+                    }
+                    var radCircle = (40 - 10) * val + (10 * @max - 40 * @min);
+                    radCircle = radCircle / (@max - @min);
+                    var circle = L.circleMarker([center.lat, center.lng], { fillColor: "#f00", radius: radCircle })
+                        .bindLabel(feature.properties.NAME_UTF8 +':'+ val, { direction: 'left'})
+                        
+                        .addTo(map);
+
+                }
+        }
+
+        var map;
+        $( document ).ready(function() {
+            map = L.map('map').setView([46,25], 7);
+
+            L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpandmbXliNDBjZWd2M2x6bDk3c2ZtOTkifQ._QA7i5Mpkd_m30IGElHziw', {
+                maxZoom: 7,
+                minZoom: 7,
+                attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+                    '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+                    'Imagery © <a href="http://mapbox.com">Mapbox</a>',
+                id: 'mapbox.light'
+            }).addTo(map);
+            //map.panTo(new L.LatLng(46, 25), { scrollWheelZoom: false, tap: false });
+
+
+            L.geoJson(judeteRO, {
+                onEachFeature: onEachFeature
+            });
+            //alert('done');
+        });
+    </script>
+}
+
