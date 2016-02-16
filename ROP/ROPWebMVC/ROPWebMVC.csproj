@@ -259,6 +259,10 @@
       <Project>{D7A069F0-B74A-4199-A59E-0BD2C8303D5C}</Project>
       <Name>ROPInfrastructure</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ROPMECS\ROPMECS.csproj">
+      <Project>{A659AAC6-B710-4602-9D70-C741CCBA19B0}</Project>
+      <Name>ROPMECS</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ROPMinisterulSanatatii\ROPMinisterulSanatatii.csproj">
       <Project>{1D2D6739-75B8-4109-B05E-D84B988968AB}</Project>
       <Name>ROPMinisterulSanatatii</Name>

@@ -33,57 +33,30 @@ namespace ROPMECS
             string data = Encoding.UTF8.GetString(dataBytes);
             var list = new List<RopData>();
             var lines = data.Split((char)(10));
-            foreach (var line in lines)
+            var restFromPreviousLine = "";
+            for(int lineIter=0;lineIter<lines.Length; lineIter++)
             {
+                if(lineIter==0)//header
+                    continue;
+                
+                var line = lines[lineIter];
                 if (string.IsNullOrWhiteSpace(line))
                     continue;
 
-                var arr = line.Split(new string[] { "," }, StringSplitOptions.None);
+                var arr = (restFromPreviousLine+line).Split(new [] { "," }, StringSplitOptions.None);
+                
+                if (arr.Length < 16)
+                {
+                    restFromPreviousLine += line;
+                    continue;    
+                }
+                restFromPreviousLine = "";
                 for (int i = 0; i < arr.Length; i++)
                 {
                     arr[i] = arr[i].Replace("\"", "");
                 }
-                if (arr[0].ToUpper() == "﻿COD")//header
-                    continue;
-                Judet judet = null;
-                if (arr[0].ToUpper() == "PÂRÂUL PÂNTEI")
-                    continue;
-                if (arr[0].ToUpper() == "HENRI COANDĂ")
-                    continue;
 
-                if (arr[0].ToUpper() == "ŞTEI")
-                    continue;
-                if (arr[0].ToUpper() == "BULZ")
-                    continue; 
-                if (arr[0] == "0561208551")
-                {
-                    judet = judetFinder.Find("Bihor");
-                    var rd1 = new RopData();
-                    rd1.Judet = judet;
-                    rd1.Valoare = 1;
-                    list.Add(rd1);
-                    continue;
-                }
-                if (arr[0] == "0561200059")
-                {
-                    judet = judetFinder.Find("Bihor");
-                    var rd1 = new RopData();
-                    rd1.Judet = judet;
-                    rd1.Valoare = 1;
-                    list.Add(rd1);
-                    continue;
-                }
-                if (arr[0] == "2762103816")
-                {
-                    judet = judetFinder.Find("NEAMT");
-                    var rd1 = new RopData();
-                    rd1.Judet = judet;
-                    rd1.Valoare = 1;
-                    list.Add(rd1);                   
-                    continue;
-
-                }
-                
+                Judet judet = null;                
                 for (int i = 16; i < arr.Length; i++)
                 {
 
@@ -93,7 +66,7 @@ namespace ROPMECS
                     {
                         judet = judetFinder.Find(numeJudet);
                     }
-                    catch (Exception ex)
+                    catch (ArgumentException)
                     {
                         //do not log
                     }
@@ -103,11 +76,9 @@ namespace ROPMECS
                 
                 if(judet == null)
                 {
-                    throw new ArgumentException("not found judet:" + line);
+                    throw new ArgumentException("not found judet:" + string.Join(",", arr));
                 }
 
-                
-                
                 var rd = new RopData();
                 rd.Judet = judet;
                 rd.Valoare = 1;                

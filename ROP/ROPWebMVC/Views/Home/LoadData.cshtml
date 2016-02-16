@@ -1,6 +1,7 @@
 ﻿@using ROPAE
 @using ROPEvidenta
 @using ROPInfrastructure
+@using ROPMECS
 @using ROPMinisterulSanatatii
 @using ROPPI
 
@@ -17,10 +18,9 @@
         new Tuple<string, string, bool>("Farmacii", html(typeof (Farmacii).AssemblyQualifiedName), names.Contains(typeof (Farmacii).AssemblyQualifiedName)),
         new Tuple<string, string, bool>("Electoral", html(typeof (StatisticaLocalitati).AssemblyQualifiedName), names.Contains(typeof (StatisticaLocalitati).AssemblyQualifiedName)),
         new Tuple<string, string, bool>("Casatorii", html(typeof (Casatorii).AssemblyQualifiedName), names.Contains(typeof (Casatorii).AssemblyQualifiedName)),
-        new Tuple<string, string, bool>("ParcAuto", html(typeof (ParcAuto).AssemblyQualifiedName), names.Contains(typeof (ParcAuto).AssemblyQualifiedName))
-        
-
-    };
+        new Tuple<string, string, bool>("ParcAuto", html(typeof (ParcAuto).AssemblyQualifiedName), names.Contains(typeof (ParcAuto).AssemblyQualifiedName)),
+        new Tuple<string, string, bool>("UnitatiInvatamint", html(typeof (UnitatiInvatamint).AssemblyQualifiedName), names.Contains(typeof (UnitatiInvatamint).AssemblyQualifiedName))
+};
 }
 
 <h2>LoadData</h2>
