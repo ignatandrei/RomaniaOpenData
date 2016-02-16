@@ -121,6 +121,7 @@ namespace ROPInfrastructure
             alternateNames.Add(a("constanţa", "Constanta"));
             alternateNames.Add(a("dîmboviţa", "dimbovita"));
             alternateNames.Add(a("dâmboviţa", "dimbovita"));
+            alternateNames.Add(a("dâmbovita", "dimbovita"));
             alternateNames.Add(a("dambovita", "dimbovita"));
             alternateNames.Add(a("galaţi", "galati"));
             alternateNames.Add(a("ialomiţa", "ialomita"));
@@ -136,6 +137,7 @@ namespace ROPInfrastructure
             alternateNames.Add(a("vâlcea", "vilcea"));
             alternateNames.Add(a("valcea", "vilcea"));
             alternateNames.Add(a("m.bucureşti", "bucuresti"));
+            alternateNames.Add(a("MUNICIPIUL BUCURESTI", "bucuresti"));
             alternateNames.Add(a("bucureşti", "bucuresti"));
             alternateNames.Add(a("sector 1", "bucuresti"));
             alternateNames.Add(a("sector 2", "bucuresti"));
