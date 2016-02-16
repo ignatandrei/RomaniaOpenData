@@ -9,12 +9,12 @@ namespace ROPWebMVC.Controllers
     {
         public async Task<IEnumerable<RopDataSaved>> Get()
         {
-            return await instanceRavenStore.DataSaved();
+            return await DataSavedLoader.DataSaved();
         }
         [HttpGet]
         public RopDataSaved Get([FromUri] string id)
         {
-            using (var rep = new Repository<RopDataSaved>())
+            using (var rep = new RepositoryLiteDb<RopDataSaved>())
             {
                 return rep.GetFromId(id);
             }

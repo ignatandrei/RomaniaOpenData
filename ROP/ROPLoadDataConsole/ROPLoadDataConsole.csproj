@@ -31,6 +31,26 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Raven.Abstractions, Version=3.0.0.0, Culture=neutral, PublicKeyToken=37f41c7f99471593, processorArchitecture=MSIL">
       <HintPath>..\packages\RavenDB.Database.3.0.30037\lib\net45\Raven.Abstractions.dll</HintPath>
@@ -66,13 +86,25 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ROPAE\ROPAE.csproj">
+      <Project>{7e9af2c0-cc6d-4034-b4d1-559d1f343bb2}</Project>
+      <Name>ROPAE</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ROPCommon\ROPCommon.csproj">
       <Project>{3C5ADB04-ACB6-494A-9651-DF7021A9548A}</Project>
       <Name>ROPCommon</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ROPEvidenta\ROPEvidenta.csproj">
+      <Project>{dbb5264d-0aa0-434e-a246-343ba680961e}</Project>
+      <Name>ROPEvidenta</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ROPInfrastructure\ROPInfrastructure.csproj">
       <Project>{D7A069F0-B74A-4199-A59E-0BD2C8303D5C}</Project>
       <Name>ROPInfrastructure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ROPMECS\ROPMECS.csproj">
+      <Project>{a659aac6-b710-4602-9d70-c741ccba19b0}</Project>
+      <Name>ROPMECS</Name>
     </ProjectReference>
     <ProjectReference Include="..\ROPMinisterulSanatatii\ROPMinisterulSanatatii.csproj">
       <Project>{1D2D6739-75B8-4109-B05E-D84B988968AB}</Project>
@@ -81,6 +113,10 @@
     <ProjectReference Include="..\ROPObjects\ROPObjects.csproj">
       <Project>{df7a557b-39a8-42dd-ba4a-e3de140c9ee2}</Project>
       <Name>ROPObjects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ROPPI\ROPPI.csproj">
+      <Project>{a5ec06e3-82c8-4742-8279-b27bed1377e3}</Project>
+      <Name>ROPPI</Name>
     </ProjectReference>
     <ProjectReference Include="..\ROPSiruta\ROPSiruta.csproj">
       <Project>{7CA077E3-D45C-426C-B6B7-97A9F22169A2}</Project>

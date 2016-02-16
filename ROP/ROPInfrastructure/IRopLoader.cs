@@ -36,7 +36,7 @@ namespace ROPInfrastructure
         public async Task<RopDocument[]> GetData()
         {
             var type = this.GetType().FullName;
-            using (var rep = new Repository<RopDocument>(type))
+            using (var rep = new RepositoryLiteDb<RopDocument>(type))
             {
                 var exists = rep.ExistsData();
                 if (!exists)

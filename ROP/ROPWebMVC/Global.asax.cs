@@ -24,16 +24,18 @@ namespace ROPWebMVC
 
         protected void Application_End()
         {
-            instanceRavenStore.Cleanup();
+            
         }
 
         private void InitData()
         {
+            var x = AppDomain.CurrentDomain.GetData("DataDirectory");
+
             //instanceRavenStore.BackupAllDatabase(@"D:\github\test");
-            var judete = instanceRavenStore.Judete().Result;
+            var judete = JudeteLoader.Judete().Result;
             var nume = judete.Select(it => it.Nume).OrderBy(it=>it).ToArray();
             Application["judete"] = nume;
-            var data = instanceRavenStore.DataSaved().Result;
+            var data = DataSavedLoader.DataSaved().Result;
             Application["dataSaved"] = data;
 
         }

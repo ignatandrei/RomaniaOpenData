@@ -12,6 +12,7 @@ namespace ROPWebMVC.Controllers
     {
         public async Task<ActionResult> Index()
         {
+
             var dataSv = this.HttpContext.Application["dataSaved"] as RopDataSaved[];
             return View(dataSv);
         }
@@ -26,7 +27,7 @@ namespace ROPWebMVC.Controllers
             
             var dataSaved=new List<RopDataSaved>();
 
-            using (var rep = new Repository<RopDataSaved>())
+            using (var rep = new RepositoryLiteDb<RopDataSaved>())
             {
                 var q = rep.RetrieveData().ToArray();
                 if (q.Length > 0) { 
@@ -40,7 +41,7 @@ namespace ROPWebMVC.Controllers
             if (!existTypeName)
             {
 
-                var dataRetr = await instanceRavenStore.GetOrLoad(typeName);
+                var dataRetr = await Repository.GetOrLoad(typeName);
 
 
                 dataSaved.AddRange(
@@ -52,7 +53,7 @@ namespace ROPWebMVC.Controllers
                     }));
 
 
-                using (var rep = new Repository<RopDataSaved>())
+                using (var rep = new RepositoryLiteDb<RopDataSaved>())
                 {
                     var q = await rep.StoreDataAsNew(dataSaved.ToArray());
                 }

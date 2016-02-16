@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,62 +52,77 @@ namespace ROPLoadDataConsole
         {
             //var dd = new DownloadData();
             //var dataBytes = dd.Data("http://www.date.gov.ro/dataset/3c128d2f-f4e2-47d5-ad11-a5602c1e4856/resource/61a73bc0-34c6-4067-b1c4-3ab659323c87/download/numrul-medicilor-pe-judee-i-ministere-din-sectorul-public-numrul-medicilor-pe-ministere-macroreg.xls").Result;
-
-
-            //return;
-            instanceRavenStore.BackupAllDatabase(@"D:\github\test");
-            Thread.Sleep(1000 * 60*10);
-            return;
-            var judete = instanceRavenStore.Judete().Result;
+            //
+            var x= AppDomain.CurrentDomain.GetData("DataDirectory");
+            if (x == null)
+            {
+                AppDomain.CurrentDomain.SetData("DataDirectory", Path.Combine(Directory.GetCurrentDirectory(),"App_Data"));
+            }
+            
+            var judete = JudeteLoader.Judete().Result;
             foreach (var judet in judete)
             {
                 Console.WriteLine(judet.Nume);
             }
 
-
-            var dataSv = instanceRavenStore.DataSaved().Result;
-            foreach (var data in dataSv)
-            {
-                var docs = instanceRavenStore.GetOrLoad(data).Result;
-                foreach (var ropDocument in docs)
-                {
-                    Console.WriteLine(ropDocument.Name);
-                    foreach (var ropData in ropDocument.Data)
-                    {
-                        Console.WriteLine("              " + ropData.Judet.Nume + " "  + ropData.Valoare);
-                    }
-                }
-
-            }
-
-           
             
+            var dataSv = DataSavedLoader.DataSaved().Result;
             
-
             var dataSaved=new List<RopDataSaved>();
 
-            var type = typeof (Medici);
-            var dataRetr =instanceRavenStore.GetOrLoad(type).Result;
-            dataSaved.AddRange(
-                dataRetr.Select(ropDocument => new RopDataSaved()
+            foreach (var file in Directory.GetFiles(Directory.GetCurrentDirectory(),"Rop*.dll"))
+            {
+                try
                 {
-                    ID = ropDocument.ID,
-                    Name = type.AssemblyQualifiedName,
-                    Document = ropDocument
-                }));
-
-            type = typeof(Farmacii);
-            dataRetr = instanceRavenStore.GetOrLoad(typeof(Farmacii)).Result;
-
-            dataSaved.AddRange(
-                dataRetr.Select(ropDocument => new RopDataSaved()
+                    Assembly.LoadFile(file);
+                }
+                catch (Exception ex)
                 {
-                    ID = ropDocument.ID,
-                    Name = type.AssemblyQualifiedName,
-                    Document = ropDocument
-                }));
+                    string s = ex.Message;
+                }
+            }
+            var interfaceLoader = typeof (IRopLoader);
+            var types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(p => interfaceLoader.IsAssignableFrom(p) && p.IsClass && !p.IsAbstract)
+                .ToArray();
+            
+            foreach (var type in types)
+            {
+                Console.WriteLine("loading "+type.Name);
+                var dataRetr = Repository.GetOrLoad(type).Result;                
+                dataSaved.AddRange(
+                    dataRetr.Select(ropDocument => new RopDataSaved()
+                    {
+                        ID = ropDocument.ID,
+                        Name = type.AssemblyQualifiedName,
+                        //Document = ropDocument
+                    }));
 
-            using (var rep = new Repository<RopDataSaved>())
+            }
+            
+            //var dataRetr =Repository.GetOrLoad(type).Result;
+            //dataSaved.AddRange(
+            //    dataRetr.Select(ropDocument => new RopDataSaved()
+            //    {
+            //        ID = ropDocument.ID,
+            //        Name = type.AssemblyQualifiedName,
+            //        //Document = ropDocument
+            //    }));
+
+            //type = typeof(Farmacii);
+            //dataRetr = Repository.GetOrLoad(typeof(Farmacii)).Result;
+
+            //dataSaved.AddRange(
+            //    dataRetr.Select(ropDocument => new RopDataSaved()
+            //    {
+            //        ID = ropDocument.ID,
+            //        Name = type.AssemblyQualifiedName,
+            //        //Document = ropDocument
+            //    }));
+
+
+            using (var rep = new RepositoryLiteDb<RopDataSaved>())
             {
                 var q =rep.StoreDataAsNew(dataSaved.ToArray()).Result;
             }
