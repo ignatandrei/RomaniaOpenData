@@ -271,6 +271,10 @@
       <Project>{df7a557b-39a8-42dd-ba4a-e3de140c9ee2}</Project>
       <Name>ROPObjects</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ROPPermise\ROPPermise.csproj">
+      <Project>{81A97ADA-E186-42A7-BE58-F571E2CAAF74}</Project>
+      <Name>ROPPermise</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ROPPI\ROPPI.csproj">
       <Project>{A5EC06E3-82C8-4742-8279-B27BED1377E3}</Project>
       <Name>ROPPI</Name>

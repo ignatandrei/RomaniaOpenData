@@ -3,6 +3,7 @@
 @using ROPInfrastructure
 @using ROPMECS
 @using ROPMinisterulSanatatii
+@using ROPPermise
 @using ROPPI
 
 @{
@@ -19,7 +20,9 @@
         new Tuple<string, string, bool>("Electoral", html(typeof (StatisticaLocalitati).AssemblyQualifiedName), names.Contains(typeof (StatisticaLocalitati).AssemblyQualifiedName)),
         new Tuple<string, string, bool>("Casatorii", html(typeof (Casatorii).AssemblyQualifiedName), names.Contains(typeof (Casatorii).AssemblyQualifiedName)),
         new Tuple<string, string, bool>("ParcAuto", html(typeof (ParcAuto).AssemblyQualifiedName), names.Contains(typeof (ParcAuto).AssemblyQualifiedName)),
-        new Tuple<string, string, bool>("UnitatiInvatamint", html(typeof (UnitatiInvatamint).AssemblyQualifiedName), names.Contains(typeof (UnitatiInvatamint).AssemblyQualifiedName))
+        new Tuple<string, string, bool>("UnitatiInvatamint", html(typeof (UnitatiInvatamint).AssemblyQualifiedName), names.Contains(typeof (UnitatiInvatamint).AssemblyQualifiedName)),
+        new Tuple<string, string, bool>("DetinatoriPermise", html(typeof (DetinatoriPermise).AssemblyQualifiedName), names.Contains(typeof (DetinatoriPermise).AssemblyQualifiedName))
+        
 };
 }
 

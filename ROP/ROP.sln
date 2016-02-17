@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROPPI", "ROPPI\ROPPI.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROPMECS", "ROPMECS\ROPMECS.csproj", "{A659AAC6-B710-4602-9D70-C741CCBA19B0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROPPermise", "ROPPermise\ROPPermise.csproj", "{81A97ADA-E186-42A7-BE58-F571E2CAAF74}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -121,6 +123,14 @@ Global
 		{A659AAC6-B710-4602-9D70-C741CCBA19B0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A659AAC6-B710-4602-9D70-C741CCBA19B0}.Release|x64.ActiveCfg = Release|Any CPU
 		{A659AAC6-B710-4602-9D70-C741CCBA19B0}.Release|x64.Build.0 = Release|Any CPU
+		{81A97ADA-E186-42A7-BE58-F571E2CAAF74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81A97ADA-E186-42A7-BE58-F571E2CAAF74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81A97ADA-E186-42A7-BE58-F571E2CAAF74}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{81A97ADA-E186-42A7-BE58-F571E2CAAF74}.Debug|x64.Build.0 = Debug|Any CPU
+		{81A97ADA-E186-42A7-BE58-F571E2CAAF74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81A97ADA-E186-42A7-BE58-F571E2CAAF74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81A97ADA-E186-42A7-BE58-F571E2CAAF74}.Release|x64.ActiveCfg = Release|Any CPU
+		{81A97ADA-E186-42A7-BE58-F571E2CAAF74}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
