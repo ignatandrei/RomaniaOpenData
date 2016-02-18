@@ -243,6 +243,10 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MDRAP\MDRAP.csproj">
+      <Project>{E53CFBA2-AB39-40DF-AEDC-FAF02F49E3BA}</Project>
+      <Name>MDRAP</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ROPAE\ROPAE.csproj">
       <Project>{7e9af2c0-cc6d-4034-b4d1-559d1f343bb2}</Project>
       <Name>ROPAE</Name>
