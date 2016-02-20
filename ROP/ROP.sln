@@ -29,6 +29,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROPPermise", "ROPPermise\RO
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MDRAP", "MDRAP\MDRAP.csproj", "{E53CFBA2-AB39-40DF-AEDC-FAF02F49E3BA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROPANSV", "ROPANSV\ROPANSV.csproj", "{E63893AA-4B6E-442F-B1FE-C679A9F642C5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -141,6 +143,14 @@ Global
 		{E53CFBA2-AB39-40DF-AEDC-FAF02F49E3BA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E53CFBA2-AB39-40DF-AEDC-FAF02F49E3BA}.Release|x64.ActiveCfg = Release|Any CPU
 		{E53CFBA2-AB39-40DF-AEDC-FAF02F49E3BA}.Release|x64.Build.0 = Release|Any CPU
+		{E63893AA-4B6E-442F-B1FE-C679A9F642C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E63893AA-4B6E-442F-B1FE-C679A9F642C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E63893AA-4B6E-442F-B1FE-C679A9F642C5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E63893AA-4B6E-442F-B1FE-C679A9F642C5}.Debug|x64.Build.0 = Debug|Any CPU
+		{E63893AA-4B6E-442F-B1FE-C679A9F642C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E63893AA-4B6E-442F-B1FE-C679A9F642C5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E63893AA-4B6E-442F-B1FE-C679A9F642C5}.Release|x64.ActiveCfg = Release|Any CPU
+		{E63893AA-4B6E-442F-B1FE-C679A9F642C5}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

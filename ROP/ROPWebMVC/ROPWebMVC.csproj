@@ -251,6 +251,10 @@
       <Project>{7e9af2c0-cc6d-4034-b4d1-559d1f343bb2}</Project>
       <Name>ROPAE</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ROPANSV\ROPANSV.csproj">
+      <Project>{E63893AA-4B6E-442F-B1FE-C679A9F642C5}</Project>
+      <Name>ROPANSV</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ROPCommon\ROPCommon.csproj">
       <Project>{3c5adb04-acb6-494a-9651-df7021a9548a}</Project>
       <Name>ROPCommon</Name>

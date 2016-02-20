@@ -1,5 +1,6 @@
 ﻿@using MDRAP
 @using ROPAE
+@using ROPANSV
 @using ROPEvidenta
 @using ROPInfrastructure
 @using ROPMECS
@@ -23,7 +24,8 @@
         new Tuple<string, string, bool>("ParcAuto", html(typeof (ParcAuto).AssemblyQualifiedName), names.Contains(typeof (ParcAuto).AssemblyQualifiedName)),
         new Tuple<string, string, bool>("UnitatiInvatamint", html(typeof (UnitatiInvatamint).AssemblyQualifiedName), names.Contains(typeof (UnitatiInvatamint).AssemblyQualifiedName)),
         new Tuple<string, string, bool>("DetinatoriPermise", html(typeof (DetinatoriPermise).AssemblyQualifiedName), names.Contains(typeof (DetinatoriPermise).AssemblyQualifiedName)),
-        new Tuple<string, string, bool>("ObiectiveInvestiții", html(typeof (ObiectiveInvestiții).AssemblyQualifiedName), names.Contains(typeof (ObiectiveInvestiții).AssemblyQualifiedName))
+        new Tuple<string, string, bool>("ObiectiveInvestiții", html(typeof (ObiectiveInvestiții).AssemblyQualifiedName), names.Contains(typeof (ObiectiveInvestiții).AssemblyQualifiedName)),
+        new Tuple<string, string, bool>("NumarAnimale", html(typeof (NumarAnimale).AssemblyQualifiedName), names.Contains(typeof (NumarAnimale).AssemblyQualifiedName))
         
 };
 }

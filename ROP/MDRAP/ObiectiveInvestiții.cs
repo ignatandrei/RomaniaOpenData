@@ -32,10 +32,10 @@ namespace MDRAP
 
         public override async Task<RopDocument[]> FillDate()
         {
-            var dd = new DownloadData();
-            var dataBytes = await dd.Data(rdBase.PathDocument);
-            var path = Path.Combine(Path.GetTempPath(), Path.GetTempFileName() + ".xls");
-            File.WriteAllBytes(path, dataBytes);
+            //var dd = new DownloadData();
+            //var dataBytes = await dd.Data(rdBase.PathDocument);
+            //var path = Path.Combine(Path.GetTempPath(), Path.GetTempFileName() + ".xls");
+            //File.WriteAllBytes(path, dataBytes);
 
 
             var list = new List<RopData>();
