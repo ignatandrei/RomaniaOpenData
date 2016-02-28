@@ -81,14 +81,14 @@ namespace ROPWebMVC.Controllers
 
         public ActionResult About()
         {
-            ViewBag.Message = "Your application description page.";
+            ViewBag.Message = "Date sumarizate Open Data de la http://data.gov.ro/dataset - pe judete si orase. Obtinere corelatii rapid https://github.com/ignatandrei/RomaniaOpenData";
 
             return View();
         }
 
         public ActionResult Contact()
         {
-            ViewBag.Message = "Your contact page.";
+            ViewBag.Message = "ignatandrei@yahoo.com";
 
             return View();
         }
